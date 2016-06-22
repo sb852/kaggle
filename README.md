@@ -1,4 +1,4 @@
-# kaggle
+# Bike Sharing Demand
 Kaggle competition on bike sharing demand. https://www.kaggle.com/c/bike-sharing-demand
 
 In the competition, bike rentals of some given time points need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set comprises of the remaining days of each month. The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40).
