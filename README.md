@@ -78,10 +78,9 @@ users show different behaviours again.
 
 __Is there a difference in rentals per week day?__  
 We can see a clear difference in the behaviour of both groups. Registered users follow a more predictable pattern. They
-might rent the bike to travel to work and they rent fewer bikes on the weekend. Casual users seem to be users who rent their bikes mostly on weekends.
+might rent the bike to travel to work and they rent fewer bikes on the weekend. Casual users seem to be users who rent their bikes mostly on (or shortly before/after) weekends.
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
-
 
 
 __Does the daily usage pattern differ between registered and casual users?__  
@@ -114,6 +113,7 @@ plt.title('Registered users')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
+Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
 
 __Conclusion:__  
 
