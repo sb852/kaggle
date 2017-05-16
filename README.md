@@ -2,7 +2,7 @@
 This is a project page for the kaggle competition on bike sharing demand. (https://www.kaggle.com/c/bike-sharing-demand)
 
 #  Background
-In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month. 
+In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
 
 The following independent variables are given (taken from the project page):  
 __'datetime'__ - hourly date + timestamp  
@@ -18,20 +18,22 @@ __'atemp'__ - "feels like" temperature in Celsius
 __'humidity'__ - relative humidity  
 __'windspeed'__ - wind speed  
 
+The dataset has a low number of features. Feature engineering was performed to drastically improve the model performance.
+
 Three dependent variables are given. 
-'count' is the total number of bike rentals per hour. 
-'registered' is the number of bike rentals per hour for registered users.
-'casual' is the number of bike rentals per hour for casual users.
+'count' is the total number of bike rentals per hour ('registered' + 'casual'). 
+'registered' is the number of bike rentals per hour of registered users.
+'casual' is the number of bike rentals per hour of casual users.
 
 #  Exploratory data analysis
 
 In order to get a better understanding of the dataset, I created a number of visualization. Some visualizations
-might not look very interesting but it is a good idea to double-check the data even though kaggle datasets
-are normally rather clean.
+might not look very interesting but they are helpful to double-check the data (even though kaggle datasets
+are normally rather clean).
  
 __Is the depent variable normally distributed?__  
 The count variable is skewed to the right. There are many hours in which very few bikes were rented out and 
-there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with good weather. We will take care of these outliers in a later step. 
+there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with especially good weather. We will take care of these outliers in a later step. 
 
 ```
 path_training_data = "data/train(1).csv"
@@ -46,14 +48,14 @@ plt.grid('on')
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
 __Do both years show a similar pattern?__  
-The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years. In case of a stark difference between the years, it might be necesarry to build separate models for each year. Here, this
-does not seem to be needed.
+The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years. In case of a stark difference between the years, it might be necesarry to build separate models for each year. This
+does not seem to be needed with the present dataset.
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/year_comparison_rentals.jpg)
 
 
 The dataset contains rentals per hour for the casual and registered group separately. In the following, we will check if
-it might be advantageous to develop separate models for each group.
+it is needed to develop separate models for each group.
 
 __Do casual and registered users account for the same number of rentals?__  
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
@@ -115,6 +117,10 @@ plt.title('Registered users')
 
 Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
 
+__Conclusion:__  
+
+Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
+
 __What is the influence of the weather?__  
 
 In the 'weather' variable the weather is categorized into 4 different conditions. Not surprisingly, people
@@ -127,11 +133,6 @@ the higher the temperature/air temperature, the more bikes are rented out. Regar
 optimum between 20-30. The most comfortable humidity seems to be between 20-30 and continuously decreases the more humid it becomes.
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/weather_factors.jpg)
 
-
-
-__Conclusion:__  
-
-Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
 #  Feature Engineering
 
@@ -159,13 +160,20 @@ We also a small percentage of noise to our outcome variable to improve generaliz
 
 #  Model Development
 
+For registered and casual users, a separate xgb boost was developed. The last two days of each month were used as a private test set. XGB classifiers were developed on 90% the remaining days per month and the validation set consisted of the remaining 10%. The validation set was used to perform early stopping to prevent overfitting.  
 
-For registered and casual users, a separate xgb boost is estimated. XGB hyperparameters are found using random initialisations and selecting the best based on their performance on a separate validation set.
+The best combination of XGB hyperparameters (including max_tree_depths, learning_rate, min_child_weight, etc.) is not difficult to find. We performed a randomized search and developed hundreds of classifiers. All classifiers were tested on our test set. 
+For each group (casual, registered), the best performing classifier was identified and predicted were added (i.e. predicted_casual_rentals + predicted_registered_rentals = predicted_total_rentals). The best performing classifier was used to predict the labels for the real test set and results were submitted to kaggle. 
 
-#  Model performance
+#  Model performance  
 
-The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The final score on the public leaderboard is: 0.40693 (within the top10% of all submissions).
+The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristics might have occured. The final score on the public leaderboard is: 0.40693 (within the top 10% of all submissions).  
 
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/kaggle_score.jpg)
 
+
+#  Future directions  
+
+The randomized hyperparamter search was only run for two hours on a quad-core i7 laptop. A better final score is likely
+if the hyperparameter search is run for a longer time. A more diverse set of classifiers could also be tested including logistic regression, svr and neural networks.
