@@ -35,16 +35,6 @@ __Is the depent variable normally distributed?__
 The count variable is skewed to the right. There are many hours in which very few bikes were rented out and 
 there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with especially good weather. We will take care of these outliers in a later step. 
 
-```
-path_training_data = "data/train(1).csv"
-data = pd.read_csv(path_training_data)
-data['count'].plot(kind='hist', bins=500)
-plt.xlabel('Rentals per hour')
-plt.ylabel('Frequency')
-plt.xlim([0, 1000])
-plt.grid('on')
-```
-
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
 __Do both years show a similar pattern?__  
@@ -61,14 +51,7 @@ __Do casual and registered users account for the same number of rentals?__
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
 the spread in rentals per hour is larger. 
 
-```
-boxplot_data = pd.DataFrame() 
-boxplot_data['registered'] = data['registered'].values
-boxplot_data['casual'] = data['casual'].values
-boxplot_data.plot(kind='box')
-plt.ylabel('Rentals per hour')
-plt.ylim([-50, 600])
-```
+
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
 __Is there a difference per calendar day?__  
@@ -86,32 +69,6 @@ might rent the bike to travel to work and they rent fewer bikes on the weekend. 
 
 
 __Does the daily usage pattern differ between registered and casual users?__  
-
-```
-hours = pd.DatetimeIndex(data['datetime']).hour
-unique_hours = list(range(24))
-boxplot_group_1 = []
-boxplot_group_2 = []
-
-plt.subplot(1, 2, 1)
-for current_hour in unique_hours:
-    hour_index = np.where(hours == current_hour)[0]
-    boxplot_group_1.append(list(data['casual'].values[hour_index]))
-    boxplot_group_2.append(list(data['registered'].values[hour_index]))
-
-plt.boxplot(boxplot_group_1) 
-plt.xlabel('Hour of the day')
-plt.ylabel('Rentals')
-plt.ylim([0, 1000])
-plt.title('Casual users')
-
-plt.subplot(1, 2, 2)
-plt.boxplot(boxplot_group_2) #list(data['casual'].values[hour_index]), 1)
-plt.xlabel('Hour of the day')
-plt.ylabel('Rentals')
-plt.ylim([0, 1000])
-plt.title('Registered users')
-```
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
