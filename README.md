@@ -43,7 +43,7 @@ plt.xlim([0, 1000])
 plt.grid('on')
 ```
 
-![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
+![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
 __Do both year show a similar pattern?__  
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
