@@ -38,9 +38,20 @@ plt.xlim([0, 1000])
 plt.grid('on')
 ```
 
-
-
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
+
+Do casual and registered users account for the same number of rentals?
+Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
+the spread in rentals per hour is larger.
+
+```
+boxplot_data = pd.DataFrame() 
+boxplot_data['registered'] = data['registered'].values
+boxplot_data['casual'] = data['casual'].values
+boxplot_data.plot(kind='box')
+plt.ylabel('Rentals per hour')
+plt.ylim([-50, 600])
+```
 
 
 Conclusion:
