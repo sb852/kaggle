@@ -46,11 +46,14 @@ plt.grid('on')
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
 __Do both years show a similar pattern?__  
-The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
+The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years. In case of a stark difference between the years, it might be necesarry to build separate models for each year. Here, this
+does not seem to be needed.
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/year_comparison_rentals.jpg)
 
 
+The dataset contains rentals per hour for the casual and registered group separately. In the following, we will check if
+it might be advantageous to develop separate models for each group.
 
 __Do casual and registered users account for the same number of rentals?__  
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
