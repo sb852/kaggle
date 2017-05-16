@@ -26,7 +26,7 @@ Three dependent variables are given.
 #  Exploratory data analysis
 
 In order to get a better understanding of the dataset, I created a number of visualization.
-
+ 
 
 Conclusion:
 
