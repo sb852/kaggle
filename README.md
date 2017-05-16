@@ -57,7 +57,7 @@ it might be advantageous to develop separate models for each group.
 
 __Do casual and registered users account for the same number of rentals?__  
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
-the spread in rentals per hour is larger. Moreover, there seem to be a number of outliers.
+the spread in rentals per hour is larger. 
 
 ```
 boxplot_data = pd.DataFrame() 
@@ -68,6 +68,21 @@ plt.ylabel('Rentals per hour')
 plt.ylim([-50, 600])
 ```
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
+
+__Is there a difference per calendar day?__  
+There does not seem to be a huge difference per hourly rentals for different days of a given month. Registered and casual
+users show different behaviours again.
+
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
+
+
+__Is there a difference in rentals per week day?__  
+We can see a clear difference in the behaviour of both groups. Registered users follow a more predictable pattern. They
+might rent the bike to travel to work and they rent fewer bikes on the weekend. Casual users seem to be users who rent their bikes mostly on weekends.
+
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
+
+
 
 __Does the daily usage pattern differ between registered and casual users?__  
 
@@ -98,14 +113,6 @@ plt.title('Registered users')
 ```
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
-
-__Is there a difference per calendar day?__  
-
-![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
-
-
-__Is there a difference in rentals per week day?__  
-![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
 
 
 __Conclusion:__  
