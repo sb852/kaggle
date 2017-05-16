@@ -26,9 +26,12 @@ Three dependent variables are given.
 #  Exploratory data analysis
 
 In order to get a better understanding of the dataset, I created a number of visualization. Some visualizations
-might not look very interesting but it is a good idea to double-check the data.
+might not look very interesting but it is a good idea to double-check the data even though kaggle datasets
+are normally rather clean.
  
- Is the depent variable normally distributed? (No)
+Is the depent variable normally distributed?
+The count variable is skweded to the right. There are many hours in which very few bikes were rented and 
+there are fewer hours where a lot of bikes are rented out. It should also be noted that there a number of outliers present (e.g. values above 800). These might be holidays with good weather. Decision trees are a good choice for unbalanced datasets.
 ```
 path_training_data = "data/train(1).csv"
 data = pd.read_csv(path_training_data)
@@ -40,6 +43,13 @@ plt.grid('on')
 ```
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
+
+Do both year show a similar pattern?
+The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
+
+
+
+
 
 Do casual and registered users account for the same number of rentals?
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
