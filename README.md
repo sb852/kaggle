@@ -117,9 +117,49 @@ Both groups substantially differ regarding when they rent a bike. Casual users r
 
 __Conclusion:__  
 
-Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
+Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
 #  Feature Engineering
+
+Based on the EDA, I decided (with the help of kaggle forums) to try to develop the following additional features.
+
+__datetime__: I have separated the original datetime string into year, months, days and hours. This is very important. Usage behaviours differ for each hour, day, month and year. Decision trees would have a much worse performance without these additional branching factors. The decision tree can now build separate predictors for different timepoints.
+
+__datetime_binned__ : Casual and registered users show a stable, idiosyncratic pattern of activity during the day. I decided
+to bin together hours of similar renting behaviour.
+
+__is_weekend__: A vector indicating if it is weekend.
+__is_free__: A vector indicating if the day is off (weekend or holiday).
+__day_type__: Type of the day
+1: normal working day, non-holiday
+2. working day, holiday
+3. non-working day, holiday
+4. non-working day, non-holiday.
+__cluster_month__: Clustering together months.
+__cluster_temp__: Clustering the temperature.
+__cluster_atemp__: Clustering the atemp.
+__cluster_humidity__: Clustering the humidity.
+__cluster_windspeed__: Clustering the windspeed.
+
+__good_day__:
+
+    # Here, we identify and encode the characteristics of a particularily good day.
+
+    data['good_day'] = data['holiday']
+    data['good_day'] = 0
+    windspeed_rows = ((data['windspeed'] > 10).astype(int) + (data['windspeed'] < 25).astype(int) == 2)
+    humidity_rows = ((data['humidity'] > 10).astype(int) + (data['windspeed'] < 40).astype(int) == 2)
+    temp_rows = ((data['temp'] > 25).astype(int) + (data['temp'] < 30).astype(int) == 2)
+    good_day_rows = ((windspeed_rows.astype(int) + humidity_rows.astype(int) + temp_rows.astype(int)) == 3)
+    data['good_day'].where(good_day_rows == True, other=1)
+
+    data.ix[data['good_day'], 'good_day'] = 1
+
+    # This code is inspired by https://github.com/logicalguess/kaggle-bike-sharing-demand/blob/master/code/main.py
+    data['ideal'] = data[['temp', 'windspeed']].apply(lambda x: (0, 1)[x['temp'] > 27 and x['windspeed'] < 30], axis=1)
+    data['sticky'] = data[['humidity', 'workingday']].apply(lambda x: (0, 1)[x['workingday'] == 1 and x['humidity'] >= 60], axis=1)
+
+return data
 
 Decision trees are not the best choice when it comes to time series predictions. We can 
 
