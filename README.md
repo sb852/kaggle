@@ -25,7 +25,8 @@ Three dependent variables are given.
 
 #  Exploratory data analysis
 
-In order to get a better understanding of the dataset, I created a number of visualization.
+In order to get a better understanding of the dataset, I created a number of visualization. Some visualizations
+might not look very interesting but it is a good idea to double-check the data.
  
  Is the depent variable normally distributed? (No)
 ```
