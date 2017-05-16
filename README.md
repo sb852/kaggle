@@ -52,6 +52,7 @@ boxplot_data.plot(kind='box')
 plt.ylabel('Rentals per hour')
 plt.ylim([-50, 600])
 ```
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
 
 Conclusion:
