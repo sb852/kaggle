@@ -1,7 +1,7 @@
 # Bike Sharing Demand
 This is a project page for the kaggle competition on bike sharing demand. (https://www.kaggle.com/c/bike-sharing-demand)
 
-# Background
+#  Background
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month. 
 
 The following independent variables are given (taken from the project page):
@@ -20,17 +20,29 @@ The following independent variables are given (taken from the project page):
 
 Three dependent variables are given. 
 'count' is the total number of bike rentals per hour. 
-'registered' 
-Moreover, a separate rental count is given for 'registered' and 'casual' users. 
+'registered' is the number of bike rentals per hour for registered users.
+'casual' is the number of bike rentals per hour for casual users.
 
+#  Exploratory data analysis
+
+In order to get a better understanding of the dataset, I created a number of visualization.
+
+
+Conclusion:
 
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
-For registered and casual users, a separate xgb boost is estimated. XGB hyperparameters are found using random initialisations and selecting the best based on their performance on a separate validation set. Some feature engineering is performed (see feature engineering method).
+#  Feature Engineering
 
-The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40).
 
-The final score on the PL is: 0.40693 (within the top10% submissions).
+#  Model Development
+
+
+For registered and casual users, a separate xgb boost is estimated. XGB hyperparameters are found using random initialisations and selecting the best based on their performance on a separate validation set.
+
+#  Model performance
+
+The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The final score on the public leaderboard is: 0.40693 (within the top10% of all submissions).
 
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/kaggle_score.jpg)
