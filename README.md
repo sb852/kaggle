@@ -32,6 +32,7 @@ are normally rather clean.
 Is the depent variable normally distributed?
 The count variable is skweded to the right. There are many hours in which very few bikes were rented and 
 there are fewer hours where a lot of bikes are rented out. It should also be noted that there a number of outliers present (e.g. values above 800). These might be holidays with good weather. Decision trees are a good choice for unbalanced datasets.
+
 ```
 path_training_data = "data/train(1).csv"
 data = pd.read_csv(path_training_data)
@@ -109,6 +110,8 @@ Conclusion:
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
 #  Feature Engineering
+
+Decision trees are not the best choice when it comes to time series predictions. We can 
 
 
 #  Model Development
