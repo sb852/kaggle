@@ -27,7 +27,7 @@ Three dependent variables are given.
 
 In order to get a better understanding of the dataset, I created a number of visualization.
  
-
+`test`
 Conclusion:
 
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
