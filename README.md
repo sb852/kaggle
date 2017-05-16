@@ -90,6 +90,10 @@ Is there a difference per calendar day?
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
 
 
+Is there a difference in rentals per week day?
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_week_day.jpg)
+
+
 Conclusion:
 
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
