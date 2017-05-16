@@ -56,6 +56,32 @@ plt.ylim([-50, 600])
 
 Does the daily usage pattern differ between registered and casual users?
 
+```
+hours = pd.DatetimeIndex(data['datetime']).hour
+unique_hours = list(range(24))
+boxplot_group_1 = []
+boxplot_group_2 = []
+
+plt.subplot(1, 2, 1)
+for current_hour in unique_hours:
+    hour_index = np.where(hours == current_hour)[0]
+    boxplot_group_1.append(list(data['casual'].values[hour_index]))
+    boxplot_group_2.append(list(data['registered'].values[hour_index]))
+
+plt.boxplot(boxplot_group_1) 
+plt.xlabel('Hour of the day')
+plt.ylabel('Rentals')
+plt.ylim([0, 1000])
+plt.title('Casual users')
+
+plt.subplot(1, 2, 2)
+plt.boxplot(boxplot_group_2) #list(data['casual'].values[hour_index]), 1)
+plt.xlabel('Hour of the day')
+plt.ylabel('Rentals')
+plt.ylim([0, 1000])
+plt.title('Registered users')
+```
+
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
 
