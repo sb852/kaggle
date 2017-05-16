@@ -124,10 +124,8 @@ Both user groups have very different characteristics. Registered users follow a 
 Based on the EDA, I decided (with the help of kaggle forums) to try to develop the following additional features.
 
 __datetime__: I have separated the original datetime string into year, months, days and hours. This is very important. Usage behaviours differ for each hour, day, month and year. Decision trees would have a much worse performance without these additional branching factors. The decision tree can now build separate predictors for different timepoints.
-
 __datetime_binned__ : Casual and registered users show a stable, idiosyncratic pattern of activity during the day. I decided
 to bin together hours of similar renting behaviour.
-
 __is_weekend__: A vector indicating if it is weekend.  
 __is_free__: A vector indicating if the day is off (weekend or holiday).  
 __day_type__: Type of the day  
@@ -140,12 +138,10 @@ __cluster_temp__: Clustering the temperature.
 __cluster_atemp__: Clustering the atemp.  
 __cluster_humidity__: Clustering the humidity.  
 __cluster_windspeed__: Clustering the windspeed.  
- 
-__good_day__: Some days have great weather and more people are renting out bikes. (10 < windspeed < 25; 10 < humidity < 40; 25 < temp < 30; 
+ __good_day__: Some days have great weather and more people are renting out bikes. (10 < windspeed < 25; 10 < humidity < 40; 25 < temp < 30; 
+__dew__: The dew measure is a more reliable way of measuring humidity (because it is an absolute measure as opposed to relative humidity) and comfort for humans.
 
-
-Decision trees are not the best choice when it comes to time series predictions. We can 
-
+We also a small percentage of noise to our outcome variable to improve generalization performance.
 
 #  Model Development
 
