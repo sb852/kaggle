@@ -84,6 +84,9 @@ plt.title('Registered users')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
+Is there a difference per calendar day?
+
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
 
 
 Conclusion:
