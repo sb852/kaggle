@@ -27,16 +27,20 @@ Three dependent variables are given.
 
 In order to get a better understanding of the dataset, I created a number of visualization.
  
+ Is the depent variable normally distributed? (No)
 ```
 path_training_data = "data/train(1).csv"
 data = pd.read_csv(path_training_data)
 data['count'].plot(kind='hist', bins=500)
 plt.xlabel('Rentals per hour')
+plt.ylabel('Frequency')
 plt.xlim([0, 1000])
 plt.grid('on')
 ```
 
-![alt tag](https://github.com/drawer87/kaggle/blob/master/kaggle_score.jpg)
+
+
+![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
 
 
 Conclusion:
