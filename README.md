@@ -43,7 +43,7 @@ plt.grid('on')
 
 Do casual and registered users account for the same number of rentals?
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
-the spread in rentals per hour is larger.
+the spread in rentals per hour is larger. Moreover, there seem to be a number of outliers.
 
 ```
 boxplot_data = pd.DataFrame() 
@@ -91,7 +91,7 @@ Is there a difference per calendar day?
 
 
 Is there a difference in rentals per week day?
-![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_week_day.jpg)
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
 
 
 Conclusion:
