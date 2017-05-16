@@ -30,8 +30,8 @@ might not look very interesting but it is a good idea to double-check the data e
 are normally rather clean.
  
 __Is the depent variable normally distributed?__  
-The count variable is skweded to the right. There are many hours in which very few bikes were rented and 
-there are fewer hours where a lot of bikes are rented out. It should also be noted that there a number of outliers present (e.g. values above 800). These might be holidays with good weather. Decision trees are a good choice for unbalanced datasets.
+The count variable is skewed to the right. There are many hours in which very few bikes were rented out and 
+there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with good weather. We will take care of these outliers in a later step. 
 
 ```
 path_training_data = "data/train(1).csv"
