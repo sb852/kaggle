@@ -29,7 +29,7 @@ In order to get a better understanding of the dataset, I created a number of vis
 might not look very interesting but it is a good idea to double-check the data even though kaggle datasets
 are normally rather clean.
  
-Is the depent variable normally distributed?
+__Is the depent variable normally distributed?__
 The count variable is skweded to the right. There are many hours in which very few bikes were rented and 
 there are fewer hours where a lot of bikes are rented out. It should also be noted that there a number of outliers present (e.g. values above 800). These might be holidays with good weather. Decision trees are a good choice for unbalanced datasets.
 
@@ -45,7 +45,7 @@ plt.grid('on')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
 
-Do both year show a similar pattern?
+__Do both year show a similar pattern?__
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
 
 
@@ -66,7 +66,7 @@ plt.ylim([-50, 600])
 ```
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
-Does the daily usage pattern differ between registered and casual users?
+__Does the daily usage pattern differ between registered and casual users?__
 
 ```
 hours = pd.DatetimeIndex(data['datetime']).hour
@@ -96,16 +96,16 @@ plt.title('Registered users')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
-Is there a difference per calendar day?
+__Is there a difference per calendar day?__
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
 
 
-Is there a difference in rentals per week day?
+__Is there a difference in rentals per week day?__
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
 
 
-Conclusion:
+__Conclusion:__
 
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
