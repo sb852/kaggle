@@ -5,18 +5,18 @@ This is a project page for the kaggle competition on bike sharing demand. (https
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month. 
 
 The following independent variables are given (taken from the project page):
-'datetime' - hourly date + timestamp  
-'season' -  1 = spring, 2 = summer, 3 = fall, 4 = winter  
-'holiday' - whether the day is considered a holiday  
-'workingday' - whether the day is neither a weekend nor holiday  
-'weather - 1: Clear, Few clouds, Partly cloudy, Partly cloudy  
+__'datetime'__ - hourly date + timestamp  
+__'season'__ -  1 = spring, 2 = summer, 3 = fall, 4 = winter  
+__'holiday'__ - whether the day is considered a holiday  
+__'workingday'__ - whether the day is neither a weekend nor holiday  
+__'weather'__ - 1: Clear, Few clouds, Partly cloudy, Partly cloudy  
 2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist  
 3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds  
 4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog   
-'temp' - temperature in Celsius  
-'atemp' - "feels like" temperature in Celsius  
-'humidity' - relative humidity  
-'windspeed' - wind speed  
+__'temp'__ - temperature in Celsius  
+__'atemp'__ - "feels like" temperature in Celsius  
+__'humidity'__ - relative humidity  
+__'windspeed'__ - wind speed  
 
 Three dependent variables are given. 
 'count' is the total number of bike rentals per hour. 
@@ -45,10 +45,10 @@ plt.grid('on')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
-__Do both year show a similar pattern?__  
+__Do both years show a similar pattern?__  
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
 
-
+![alt tag](https://github.com/drawer87/kaggle/blob/master/year_comparison_rentals.jpg)
 
 
 
