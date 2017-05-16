@@ -115,7 +115,17 @@ plt.title('Registered users')
 
 Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
 
-I also visualized the influence of all weather factors.
+__What is the influence of the weather?__  
+
+In the 'weather' variable the weather is categorized into 4 different conditions. Not surprisingly, people
+rent more bikes when the weather is good but even during light snow or thunderstorm people still rent bikes.
+![alt tag](https://github.com/drawer87/kaggle/blob/master/weather_condition_rentals.jpg)
+
+
+I have visualized the total bike rentals for each continous weather factor as well. It seems to hold that
+the higher the temperature/air temperature, the more bikes are rented out. Regarding windspeed, there seems to be an
+optimum between 20-30. The most comfortable humidity seems to be between 20-30 and continuously decreases the more humid it becomes.
+![alt tag](https://github.com/drawer87/kaggle/blob/master/weather_factors.jpg)
 
 
 
