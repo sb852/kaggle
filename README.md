@@ -54,6 +54,11 @@ plt.ylim([-50, 600])
 ```
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
+Does the daily usage pattern differ between registered and casual users?
+
+![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
+
+
 
 Conclusion:
 
