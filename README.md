@@ -6,17 +6,17 @@ In the competition, bike rentals per hour need to be predicted. The training set
 
 The following independent variables are given (taken from the project page):
 'datetime' - hourly date + timestamp  
-'season' -  1 = spring, 2 = summer, 3 = fall, 4 = winter 
-'holiday' - whether the day is considered a holiday
-'workingday' - whether the day is neither a weekend nor holiday
-'weather - 1: Clear, Few clouds, Partly cloudy, Partly cloudy
-2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist
-3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds
-4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog 
-'temp' - temperature in Celsius
-'atemp' - "feels like" temperature in Celsius
-'humidity' - relative humidity
-'windspeed' - wind speed
+'season' -  1 = spring, 2 = summer, 3 = fall, 4 = winter  
+'holiday' - whether the day is considered a holiday  
+'workingday' - whether the day is neither a weekend nor holiday  
+'weather - 1: Clear, Few clouds, Partly cloudy, Partly cloudy  
+2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist  
+3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds  
+4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog   
+'temp' - temperature in Celsius  
+'atemp' - "feels like" temperature in Celsius  
+'humidity' - relative humidity  
+'windspeed' - wind speed  
 
 Three dependent variables are given. 
 'count' is the total number of bike rentals per hour. 
@@ -29,7 +29,7 @@ In order to get a better understanding of the dataset, I created a number of vis
 might not look very interesting but it is a good idea to double-check the data even though kaggle datasets
 are normally rather clean.
  
-__Is the depent variable normally distributed?__
+__Is the depent variable normally distributed?__  
 The count variable is skweded to the right. There are many hours in which very few bikes were rented and 
 there are fewer hours where a lot of bikes are rented out. It should also be noted that there a number of outliers present (e.g. values above 800). These might be holidays with good weather. Decision trees are a good choice for unbalanced datasets.
 
@@ -45,14 +45,14 @@ plt.grid('on')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/outcome_var.jpg)
 
-__Do both year show a similar pattern?__
+__Do both year show a similar pattern?__  
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years.
 
 
 
 
 
-Do casual and registered users account for the same number of rentals?
+__Do casual and registered users account for the same number of rentals?__  
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
 the spread in rentals per hour is larger. Moreover, there seem to be a number of outliers.
 
@@ -66,7 +66,7 @@ plt.ylim([-50, 600])
 ```
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
-__Does the daily usage pattern differ between registered and casual users?__
+__Does the daily usage pattern differ between registered and casual users?__  
 
 ```
 hours = pd.DatetimeIndex(data['datetime']).hour
@@ -96,16 +96,16 @@ plt.title('Registered users')
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_hour_casual.jpg)
 
-__Is there a difference per calendar day?__
+__Is there a difference per calendar day?__  
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_calendar_day.jpg)
 
 
-__Is there a difference in rentals per week day?__
+__Is there a difference in rentals per week day?__  
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
 
 
-__Conclusion:__
+__Conclusion:__  
 
 Both users have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
