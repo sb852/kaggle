@@ -4,7 +4,7 @@ This is a project page for the kaggle competition on bike sharing demand. (https
 #  Background
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month. 
 
-The following independent variables are given (taken from the project page):
+The following independent variables are given (taken from the project page):  
 __'datetime'__ - hourly date + timestamp  
 __'season'__ -  1 = spring, 2 = summer, 3 = fall, 4 = winter  
 __'holiday'__ - whether the day is considered a holiday  
@@ -115,17 +115,21 @@ plt.title('Registered users')
 
 Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
 
+I also visualized the influence of all weather factors.
+
+
+
 __Conclusion:__  
 
 Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
 
 #  Feature Engineering
 
-Based on the EDA, I decided (with the help of kaggle forums) to try to develop the following additional features.
+Based on the EDA (and the help of kaggle forums), I decided to try to develop the following additional features.
 
-__datetime__: I have separated the original datetime string into year, months, days and hours. This is very important. Usage behaviours differ for each hour, day, month and year. Decision trees would have a much worse performance without these additional branching factors. The decision tree can now build separate predictors for different timepoints.
+__datetime__: I have separated the original datetime string into year, months, days and hours. This is very important. Usage behaviours differ for each hour, day, month and year. Decision trees would have a much worse performance without these additional branching factors. The decision tree can now build separate predictors for different timepoints.  
 __datetime_binned__ : Casual and registered users show a stable, idiosyncratic pattern of activity during the day. I decided
-to bin together hours of similar renting behaviour.
+to bin together hours of similar renting behaviour.  
 __is_weekend__: A vector indicating if it is weekend.  
 __is_free__: A vector indicating if the day is off (weekend or holiday).  
 __day_type__: Type of the day  
@@ -138,7 +142,7 @@ __cluster_temp__: Clustering the temperature.
 __cluster_atemp__: Clustering the atemp.  
 __cluster_humidity__: Clustering the humidity.  
 __cluster_windspeed__: Clustering the windspeed.  
- __good_day__: Some days have great weather and more people are renting out bikes. (10 < windspeed < 25; 10 < humidity < 40; 25 < temp < 30; 
+ __good_day__: Some days have great weather and more people are renting out bikes. (10 < windspeed < 25; 10 < humidity < 40; 25 < temp < 30)  
 __dew__: The dew measure is a more reliable way of measuring humidity (because it is an absolute measure as opposed to relative humidity) and comfort for humans.
 
 We also a small percentage of noise to our outcome variable to improve generalization performance.
