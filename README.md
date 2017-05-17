@@ -96,9 +96,10 @@ rent more bikes when the weather is good but even during light snow or thunderst
 
 I have visualized the total bike rentals for each continous weather factor as well. It seems to hold that
 the higher the temperature/air temperature, the more bikes are rented out. Regarding windspeed, there seems to be an
-optimum between 20-30. The most comfortable humidity seems to be between 20-30 and continuously decreases the more humid it becomes.
+optimum between 20-30. The most comfortable humidity seems to be between 20-30 and continuously decreases the more humid it becomes. This exploration has lead me to create an additional 'good day' variable.
 ![alt tag](/weather_factors.jpg)
 
+<br>
 
 #  Feature Engineering
 
@@ -132,7 +133,7 @@ The best combination of XGB hyperparameters (including max_tree_depths, learning
 
 #  Model performance  
 
-The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristic might have occured. The final score on the public leaderboard is: 0.40693 (within the top 10% of all submissions).  
+The test cases seems to be quite different from the training set as the local rmsle on the training data was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristic might have occured. The final score on the public leaderboard is: 0.40693 whcih is within the top 10% of all submissions.  
 
 ![alt tag](/kaggle_score.jpg)
 
@@ -140,6 +141,6 @@ The test set seems to be quite different from the training set as the local rmsl
 #  Future directions  
 
 The randomized hyperparamter search was only run for two hours on a quad-core i7 laptop. A better final score is likely
-if the hyperparameter search is run for a longer time. We could improve the hyperparameter search by using a genetic algorithms approach. 
+if the hyperparameter search is run for a longer time. We could improve the hyperparameter search by using a genetic algorithms approach and improve the model selection using a 5fold cv.
 
 A more diverse set of classifiers could also be tested including logistic regression, svr and neural networks.
