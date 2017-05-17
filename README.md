@@ -35,7 +35,7 @@ __Is the depent variable normally distributed?__
 The count variable is skewed to the right. There are many hours in which very few bikes were rented out and 
 there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with especially good weather. We performed a log transformation on the output variables to reduce the effect of outliers.
 
-![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
+![alt tag](dependent_var.jpg)
 
 __Do both years show a similar pattern?__  
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years. In case of a stark difference between the years, it might be necesarry to build separate models for each year. This
