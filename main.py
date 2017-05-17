@@ -11,6 +11,9 @@ import os
 
 
 def bin_hours_registered(data):
+    """
+    Registered users showed a certain daily activity pattern which we used to bin hours.
+    """
     hour_bin = data['hour']
 
     hour_bin[data['hour'] < 6] = 0
@@ -28,6 +31,9 @@ def bin_hours_registered(data):
 
 
 def bin_hours_casual(data):
+    """
+    Casual users showed a certain daily activity pattern which we used to bin hours.
+    """
     hour_bin = data['hour']
 
     hour_bin[data['hour'] < 8] = 0
@@ -158,25 +164,15 @@ def categorize_hours(data_set):
 
 
 def cluster_month(data_set):
-    # Here, we split the months into different subgroups.
+    """
+    Here, we split the months into different subgroups.
+    """
 
     data_set['month_chunks_2'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 2))
     data_set['month_chunks_3'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 3))
     data_set['month_chunks_4'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 4))
 
     return data_set
-
-
-def add_noise(train_y):
-    # Here, we add noise between 0 and 10 for 2/3 of the y rows.
-
-    number_rows = list(range(0, train_y.shape[0]))
-    noise_to_add = pd.Series([random.randrange(0, 10, 1) for current_row in number_rows])
-    no_noise_rows = random.sample(list(range(0, train_y.shape[0])), int(np.floor(train_y.shape[0]/3)))
-    noise_to_add[no_noise_rows] = 0
-    train_y = train_y + noise_to_add
-    train_y[train_y < 0] = 0
-    return train_y
 
 
 def add_log_noise(train_y, noise_level):
@@ -200,29 +196,6 @@ def add_log_noise(train_y, noise_level):
     train_y = (train_y.stack().values * noise_to_add.values)
     train_y[train_y < 0] = 0
     return train_y
-
-
-def check_boundary_noise(intended_noise, maximum_noise):
-    if intended_noise < 0 and abs(intended_noise) > maximum_noise:
-        intended_noise = -maximum_noise
-    elif intended_noise > 0 and abs(intended_noise) > maximum_noise:
-        intended_noise = maximum_noise
-    return intended_noise
-
-
-def create_submission_data(submission_dates, prediction_to_be_submitted):
-    prediction_to_be_submitted = prediction_to_be_submitted.flatten()
-    submission_dates = np.hstack(['datetime', submission_dates])
-    prediction_to_be_submitted = np.hstack(['count', prediction_to_be_submitted])
-    prediction_to_be_submitted = np.vstack([submission_dates, prediction_to_be_submitted])
-    prediction_to_be_submitted = np.transpose(prediction_to_be_submitted)
-
-    return prediction_to_be_submitted
-
-
-def create_submission_file(prediction_to_be_submitted, file_name):
-    np.savetxt(file_name, prediction_to_be_submitted, delimiter=",", fmt='%s')
-    print("Submission file saved!" + file_name)
 
 
 def rmsle(estimator, x, y):
@@ -500,14 +473,6 @@ def interpolate_missing_data(train_x):
     train_x["humidity"] = train_x["humidity"].interpolate(method='time').apply(np.round)
     train_x["windspeed"] = train_x["windspeed"].interpolate(method='time')
 
-    return train_x
-
-
-def bin_weather(train_x):
-
-    train_x["temp"] = train_x["temp"].interpolate(method='time')
-    train_x["atemp"] = train_x["atemp"].interpolate(method='time')
-    train_x["humidity"] = train_x["humidity"].interpolate(method='time').apply(np.round)
     return train_x
 
 
