@@ -2,7 +2,7 @@
 This is a project page for the kaggle competition on bike sharing demand. (https://www.kaggle.com/c/bike-sharing-demand)
 
 #  Background
-In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each calendar month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
+In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
 
 The following independent variables are given (taken from the project page):  
 __'datetime'__ - hourly date + timestamp  
@@ -18,17 +18,17 @@ __'atemp'__ - "feels like" temperature in Celsius
 __'humidity'__ - relative humidity  
 __'windspeed'__ - wind speed  
 
-The dataset has a low number of features. Feature engineering was performed to drastically improve the model performance.
+The dataset has a low number of features. Feature engineering was performed to drastically improve the model performance. No feature elimination was performed.
 
-Three dependent variables are given. 
-'count' is the total number of bike rentals per hour ('registered' + 'casual'). 
-'registered' is the number of bike rentals per hour of registered users.
-'casual' is the number of bike rentals per hour of casual users.
+Three dependent variables are given.  
+__'count'__ is the total number of bike rentals per hour ('registered' + 'casual').   
+__'registered'__ is the number of bike rentals per hour of registered users.  
+__'casual'__ is the number of bike rentals per hour of casual users.  
 
 #  Exploratory data analysis
 
 In order to get a better understanding of the dataset, I created a number of visualization. Some visualizations
-might not look very interesting but they are helpful to double-check the data (even though kaggle datasets
+might not look very interesting but they are helpful to double-check the data quality (even though kaggle datasets
 are normally rather clean).
  
 __Is the depent variable normally distributed?__  
@@ -51,7 +51,6 @@ __Do casual and registered users account for the same number of rentals?__
 Registered users seem to make up for a much larger proportion of the total rentals per hour. Moreover,
 the spread in rentals per hour is larger. 
 
-
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_registered_casual.jpg)
 
 __Is there a difference per calendar day?__  
@@ -63,7 +62,7 @@ users show different behaviours again.
 
 __Is there a difference in rentals per week day?__  
 We can see a clear difference in the behaviour of both groups. Registered users follow a more predictable pattern. They
-might rent the bike to travel to work and they rent fewer bikes on the weekend. Casual users seem to be users who rent their bikes mostly on (or shortly before/after) weekends.
+might rent the bike to cycle to work and they rent fewer bikes on the weekend. Casual users seem to be users who rent their bikes mostly on (or shortly before/after) weekends.
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/rentals_per_weekday.jpg)
 
@@ -76,7 +75,7 @@ Both groups substantially differ regarding when they rent a bike. Casual users r
 
 __Conclusion:__  
 
-Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also driven back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Weather, season, holidays and year have an effect on the number of rents. 
+Both user groups have very different characteristics. Registered users follow a very stable usage pattern. They take their bike to work in the morning and also drive back in the evening. Casual users mostly rent bikes on the weekend (preferrably Sundays). Season, holidays and year have an effect on the number of rents as well. 
 
 __What is the influence of the weather?__  
 
@@ -93,7 +92,7 @@ optimum between 20-30. The most comfortable humidity seems to be between 20-30 a
 
 #  Feature Engineering
 
-Based on the EDA (and the help of kaggle forums), I decided to try to develop the following additional features.
+Based on the EDA (and the help of kaggle forums), I decided to develop the following additional features.
 
 __datetime__: I have separated the original datetime string into year, months, days and hours. This is very important. Usage behaviours differ for each hour, day, month and year. Decision trees would have a much worse performance without these additional branching factors. The decision tree can now build separate predictors for different timepoints.  
 __datetime_binned__ : Casual and registered users show a stable, idiosyncratic pattern of activity during the day. I decided
@@ -113,14 +112,13 @@ __cluster_windspeed__: Clustering the windspeed.
  __good_day__: Some days have great weather and more people are renting out bikes. (10 < windspeed < 25; 10 < humidity < 40; 25 < temp < 30)  
 __dew__: The dew measure is a more reliable way of measuring humidity (because it is an absolute measure as opposed to relative humidity) and comfort for humans.
 
-We also a small percentage of noise to our outcome variable to improve generalization performance.
+We also a small percentage of noise to our outcome variable which helped to improve generalization performance.
 
 #  Model Development
 
-For registered and casual users, a separate xgb classifier was developed. The first four days of each month were used as a private test set to test generalization performance. XGB classifiers were developed on 90% the remaining days per month and the validation set consisted of the remaining 10%. The validation set was used to perform early stopping to prevent overfitting.  
+For registered and casual users, a separate xgb classifier was developed. The first four days of each month were used as a private test set to test generalization performance of the models. XGB classifiers were developed on 90% the remaining days per month and the validation set consisted of the remaining 10%. The validation set was used to perform early stopping to prevent overfitting.  
 
-The best combination of XGB hyperparameters (including max_tree_depths, learning_rate, min_child_weight, etc.) is not difficult to find. We performed a randomized search and developed hundreds of classifiers. All classifiers were tested on our test set. 
-For each group (casual, registered), the best performing classifier was identified and predicted were added (i.e. predicted_casual_rentals + predicted_registered_rentals = predicted_total_rentals). The best performing classifier was used to predict the labels for the real test set and results were submitted to kaggle. 
+The best combination of XGB hyperparameters (including max_tree_depths, learning_rate, min_child_weight, etc.) is not easy to find. We performed a randomized search and developed hundreds of classifiers. All classifiers were tested on our private test set. For each group (casual, registered), the best performing classifier was identified and their predictions were added up (i.e. predicted_casual_rentals + predicted_registered_rentals = predicted_total_rentals). The best performing classifiers were used to predict the labels for the real test set and results were submitted to kaggle. 
 
 #  Model performance  
 
