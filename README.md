@@ -37,6 +37,8 @@ there are fewer hours where a lot of bikes are rented out. Decision trees are a 
 
 ![alt tag](/dependent_var.jpg)
 
+<br>
+
 
 __Do both years show a similar pattern?__  
 The dataset has rental records of 2011 and 2012. It is worthwile to check if people show similar behaviour in both years. In case of a stark difference between the years, it might be necesarry to build separate models for each year. This
@@ -44,6 +46,7 @@ does not seem to be needed with the present dataset.
 ![alt tag](/year_comparison_rentals.jpg)
 
 
+<br>
 
 __Do casual and registered users account for the same number of rentals?__  
 The dataset contains rentals per hour for the casual and registered group separately. In the following, we will check if
@@ -52,12 +55,15 @@ the spread in rentals per hour is larger.
 ![alt tag](/rentals_registered_casual.jpg)
 
 
+<br>
+
 __Is there a difference per calendar day?__  
 There does not seem to be a huge difference per hourly rentals for different days of a given month. Registered and casual
 users show different behaviours again.
 ![alt tag](/rentals_per_calendar_day.jpg)
 
 
+<br>
 
 __Is there a difference in rentals per week day?__  
 We can see a clear difference in the behaviour of both groups. Registered users follow a more predictable pattern. They
@@ -66,13 +72,14 @@ might rent the bike to cycle to work and they rent fewer bikes on the weekend. C
 ![alt tag](/rentals_per_weekday.jpg)
 
 
+<br>
 
 __Does the daily usage pattern differ between registered and casual users?__  
+Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
+
 ![alt tag](/rentals_per_hour_casual.jpg)
 
-
-
-Both groups substantially differ regarding when they rent a bike. Casual users rent bikes in the late morning and they mostly use them during the daytime. Registered users seem to rent bikes to get to work in the morning and return to their homes in the late afternoon.
+<br>
 
 __Conclusion:__  
 
@@ -83,6 +90,8 @@ __What is the influence of the weather?__
 In the 'weather' variable the weather is categorized into 4 different conditions. Not surprisingly, people
 rent more bikes when the weather is good but even during light snow or thunderstorm people still rent bikes.
 ![alt tag](/weather_condition_rentals.jpg)
+
+<br>
 
 
 I have visualized the total bike rentals for each continous weather factor as well. It seems to hold that
@@ -125,10 +134,9 @@ The best combination of XGB hyperparameters (including max_tree_depths, learning
 
 The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristic might have occured. The final score on the public leaderboard is: 0.40693 (within the top 10% of all submissions).  
 
-
 ![alt tag](/kaggle_score.jpg)
 
-
+<br>
 #  Future directions  
 
 The randomized hyperparamter search was only run for two hours on a quad-core i7 laptop. A better final score is likely
