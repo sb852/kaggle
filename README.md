@@ -33,7 +33,7 @@ are normally rather clean).
  
 __Is the depent variable normally distributed?__  
 The count variable is skewed to the right. There are many hours in which very few bikes were rented out and 
-there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with especially good weather. We will take care of these outliers in a later step. 
+there are fewer hours where a lot of bikes are rented out. Decision trees are a good choice for unbalanced datasets. It should also be noted that there a number of outliers present (e.g. values above 800, see boxplot outliers). These might be holidays with especially good weather. We performed a log transformation on the output variables to reduce the effect of outliers.
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/dependent_var.jpg)
 
@@ -117,14 +117,14 @@ We also a small percentage of noise to our outcome variable to improve generaliz
 
 #  Model Development
 
-For registered and casual users, a separate xgb boost was developed. The last two days of each month were used as a private test set. XGB classifiers were developed on 90% the remaining days per month and the validation set consisted of the remaining 10%. The validation set was used to perform early stopping to prevent overfitting.  
+For registered and casual users, a separate xgb classifier was developed. The first four days of each month were used as a private test set to test generalization performance. XGB classifiers were developed on 90% the remaining days per month and the validation set consisted of the remaining 10%. The validation set was used to perform early stopping to prevent overfitting.  
 
 The best combination of XGB hyperparameters (including max_tree_depths, learning_rate, min_child_weight, etc.) is not difficult to find. We performed a randomized search and developed hundreds of classifiers. All classifiers were tested on our test set. 
 For each group (casual, registered), the best performing classifier was identified and predicted were added (i.e. predicted_casual_rentals + predicted_registered_rentals = predicted_total_rentals). The best performing classifier was used to predict the labels for the real test set and results were submitted to kaggle. 
 
 #  Model performance  
 
-The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristics might have occured. The final score on the public leaderboard is: 0.40693 (within the top 10% of all submissions).  
+The test set seems to be quite different from the training set as the local rmsle was always much lower (0.33) than the public score (0.40). The test set consists of the last 10 days of each month and in this time period more holidays or days with a special characteristic might have occured. The final score on the public leaderboard is: 0.40693 (within the top 10% of all submissions).  
 
 
 ![alt tag](https://github.com/drawer87/kaggle/blob/master/kaggle_score.jpg)
@@ -133,4 +133,6 @@ The test set seems to be quite different from the training set as the local rmsl
 #  Future directions  
 
 The randomized hyperparamter search was only run for two hours on a quad-core i7 laptop. A better final score is likely
-if the hyperparameter search is run for a longer time. A more diverse set of classifiers could also be tested including logistic regression, svr and neural networks.
+if the hyperparameter search is run for a longer time. We could improve the hyperparameter search by using a genetic algorithms approach. 
+
+A more diverse set of classifiers could also be tested including logistic regression, svr and neural networks.
