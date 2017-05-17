@@ -7,6 +7,7 @@ import itertools
 from sklearn.preprocessing import RobustScaler
 from sklearn.externals import joblib
 from sklearn.ensemble import RandomForestRegressor
+import os
 
 
 def bin_hours_registered(data):
@@ -42,8 +43,13 @@ def bin_hours_casual(data):
 
 
 def extract_date_information(train_x):
+    """
+    We are extracting the date time information.
+    :param train_x: Original input with single datetime string.
+    :return: train_x: Modified training cases which additional time features.
+    """
+    # We are extract the hour, day, month, year of the datetime string.
     date_time_info = pd.DataFrame()
-    # Extract hour, day, month, year of the datetime string.
     date_time_info['year'] = pd.DatetimeIndex(train_x['datetime']).year
     date_time_info['month'] = pd.DatetimeIndex(train_x['datetime']).month
     date_time_info['day'] = pd.DatetimeIndex(train_x['datetime']).day
@@ -61,30 +67,37 @@ def extract_date_information(train_x):
 
 
 def read_in_training_data():
+    """
+    We are reading in the data and we split the outcome variables.
+    :return: train_x: Training data for the algorithm.
+    :return: train_y: All outcome variables for the training data.
+    """
     path_training_data = "data/train(1).csv"
     training_data = pd.read_csv(path_training_data)
     train_y = pd.DataFrame()
     train_y['count'] = training_data['count']
     train_y['casual'] = training_data['casual']
     train_y['registered'] = training_data['registered']
-
     train_x = training_data.drop(['count', 'casual', 'registered'], axis=1)
 
-    train_x = extract_date_information(train_x)
     return train_x, train_y
 
 
 def read_in_testing_data():
+    """
+    We are reading in the test data.
+    :return: test_x: The cases which need to be predicted.
+    """
     path_testing_data = "data/test.csv"
-    testing_data = pd.read_csv(path_testing_data)
+    test_x = pd.read_csv(path_testing_data)
 
-    testing_data = extract_date_information(testing_data)
-    return testing_data
+    return test_x
 
 
 def add_variable_free_day(data_set):
-    # Here, we compute an additional variable for days which are off.
-
+    """
+    We compute an additional variable 'free day'.
+    """
     is_holiday = data_set['holiday'] == 1
     is_sunday = data_set['day'] == 0
     is_saturday = data_set['day'] == 6
@@ -97,6 +110,9 @@ def add_variable_free_day(data_set):
 
 
 def add_variable_weekend(data_set):
+    """
+    We compute an additional variable to indicate the weekend.
+    """
     is_sunday = data_set['day'] == 0
     is_saturday = data_set['day'] == 6
 
@@ -108,7 +124,10 @@ def add_variable_weekend(data_set):
 
 
 def add_variable_type_day(data_set):
-    # Here, we add a variable to see if it is a
+    """
+    We are computing a variable to categorize days.
+    """
+    # The additional categorization looks like this:
     # 1: normal working day, non-holiday
     # 2. working day, holiday
     # 3. non-working day, holiday
@@ -128,6 +147,9 @@ def add_variable_type_day(data_set):
 
 
 def categorize_hours(data_set):
+    """
+    Here, we bin the hour variable.
+    """
     data_set['hours_categorized_2'] = np.floor(data_set['hour'] / 2)
     data_set['hours_categorized_3'] = np.floor(data_set['hour'] / 3)
     data_set['hours_categorized_4'] = np.floor(data_set['hour'] / 4)
@@ -154,22 +176,29 @@ def add_noise(train_y):
     noise_to_add[no_noise_rows] = 0
     train_y = train_y + noise_to_add
     train_y[train_y < 0] = 0
-    print(train_y)
     return train_y
 
 
 def add_log_noise(train_y, noise_level):
-    # Here, we add noise between 0 and 10 for 2/3 of the y rows.
+    """
+    We are adding a small random noise to our trainig labels to improve generalization.
+    :param train_y: Trainig data labels.
+    :param noise_level:
+    :return: train_y: Training data labels with noise.
+    """
+    # We are adding noise between 0 and 10 for 2/3 of the y rows.
 
+    #  We identify rows with will have noise and which will not noise.
     number_rows = list(range(0, train_y.shape[0]))
     noise_to_add = pd.Series([(random.random() / (30/noise_level)) for current_row in number_rows])
     no_noise_rows = random.sample(list(range(0, train_y.shape[0])), int(np.floor(train_y.shape[0]/3)))
+
+    #  We apply a logarithm transformation to the noise.
     noise_to_add = np.log(noise_to_add + 1)
     noise_to_add = 1 + (noise_to_add - np.mean(noise_to_add))
     noise_to_add[no_noise_rows] = 1
     train_y = (train_y.stack().values * noise_to_add.values)
     train_y[train_y < 0] = 0
-    print(train_y)
     return train_y
 
 
@@ -231,7 +260,7 @@ def sle(actual, predicted):
 def produce_random_parameters():
     parameters = pd.Series()
     parameters['max_depth'] = random.randint(3, 20)
-    parameters['n_estimators'] = random.randint(500, 20000)
+    parameters['n_estimators'] = random.randint(100, 20000)
     parameters['learning_rate'] = random.randint(1, 100) / 10000
     parameters['subsample'] = random.randint(1, 100)/100
     parameters['colsample_by_level'] = random.randint(0, 100)/100
@@ -242,92 +271,109 @@ def produce_random_parameters():
     return parameters
 
 
-def train_xgb_bagging_classifier(train_x, train_y):
-    different_iterations = range(1, 300)
-    xgb_models = dict()
+def train_xgb_classifier(train_x, train_y, user_group):
+    """
+    We are training an xgb classifier with randomized hyperparameters.
+    :param train_x: Feature-engineered training data.
+    :param train_y: Training labels after logarithm and noise modifications.
+    :param user_group: Name of the user group ('registered', 'casual').
+    :return: xgb_models: A number of xgb models.
+    """
+    #  We can load old models or train new xgb models.
+    retrain = True
 
-    for iteration in different_iterations:
-        parameters = produce_random_parameters()
+    if retrain:
+        path_exits = os.path.isdir('./xgb_models/' + user_group + '/')
+        if not(path_exits):
+            os.mkdir('./xgb_models/' + user_group + '/')
 
-        # Develop the model.
-        x_train, x_test, y_train, y_test = train_test_split(train_x, train_y, random_state=iteration, test_size=parameters['size_xgb_val'])
-        xgb_model = xgb.XGBRegressor(n_estimators=int(parameters['n_estimators']), max_depth=parameters['max_depth'], min_child_weight=parameters['min_child_weight'],
-                                     learning_rate=parameters['learning_rate'], subsample=parameters['subsample'])
-        xgb_model = xgb_model.fit(x_train, y_train, verbose=0, early_stopping_rounds=parameters['early_stopping'], eval_metric='rmse', eval_set=[(x_test, y_test)])
+        different_iterations = range(1, 100)
+        xgb_models = dict()
+        for iteration in different_iterations:
+            parameters = produce_random_parameters()
 
-        # Dump the model.
-        save_xgb = 'xgb_models/model' + str(iteration) + '.pkl'
-        joblib.dump(xgb_model, save_xgb)
-        xgb_models[iteration] = save_xgb
+            # Develop the model.
+            x_train, x_test, y_train, y_test = train_test_split(train_x, train_y,
+                                                                random_state=iteration,
+                                                                test_size=parameters['size_xgb_val'])
 
-        print('xbg fitted, iteration ',  iteration)
+            xgb_model = xgb.XGBRegressor(n_estimators=int(parameters['n_estimators']),
+                                         max_depth=int(parameters['max_depth']),
+                                         min_child_weight=parameters['min_child_weight'],
+                                         learning_rate=parameters['learning_rate'],
+                                         subsample=parameters['subsample'])
 
-    return xgb_models
+            xgb_model = xgb_model.fit(x_train, y_train, verbose=False,
+                                      early_stopping_rounds=parameters['early_stopping'],
+                                      eval_metric='rmse', eval_set=[(x_test, y_test)])
 
+            # We are saving the model for evaluation at a later moment.
+            save_xgb = 'xgb_models/' + user_group + '/model' + str(iteration) + '.pkl'
+            print('Iteration ' + str(iteration) + ', Score: ' + str(xgb_model.best_score))
+            joblib.dump(xgb_model, save_xgb)
+            xgb_models[iteration] = save_xgb
 
-def train_sklearn_bagging_classifier(train_x, train_y, parameters):
-    different_iterations = range(1, 2)
+    else:
+        #  We are loading models which have already been developed.
+        xgb_path = './xgb_models/' + user_group + '/'
+        xgb_model_names = os.listdir(xgb_path)
+        xgb_models = dict()
 
-    xgb_models = dict()
-    for iteration in different_iterations:
-        # Develop the model.
-        x_train, x_test, y_train, y_test = train_test_split(train_x, train_y, random_state=iteration, test_size=parameters['size_xgb_val'])
-
-        clf = RandomForestRegressor(n_estimators= int(parameters['n_estimators']), max_depth=int(parameters['max_depth']), min_samples_split = int(parameters['min_child_weight']))
-
-        clf = clf.fit(x_train, y_train)
-
-        # Dump the model.
-        save_xgb = 'xgb_models/model' + str(iteration) + '.pkl'
-        joblib.dump(clf, save_xgb)
-        xgb_models[iteration] = save_xgb
-
-        print('xbg fitted, iteration ',  iteration)
+        for current_model_name in xgb_model_names:
+            xgb_model = joblib.load(xgb_path + current_model_name)
+            xgb_models[current_model_name] = xgb_model
+        print('XGB models loaded.')
 
     return xgb_models
 
 
 def perform_prediction_on_validation(xgb_models, validation_x, validation_y):
-
+    """
+    We are performing predictions on the test se
+    :param xgb_models:
+    :param validation_x:
+    :param validation_y:
+    :return:
+    """
     validation_y = np.exp(validation_y) - 1
     results_rmlse = dict()
-    for element in xgb_models:
-        xgb_model = joblib.load(xgb_models[element])
+    for current_model_name in xgb_models.keys():
+        xgb_model = xgb_models[current_model_name]
 
         predicted_values = xgb_model.predict(validation_x)
         predicted_values = np.exp(predicted_values) - 1
-        results_rmlse[element] = np.sqrt((sle(validation_y.stack(), predicted_values) ** 2).mean())
+        results_rmlse[current_model_name] = np.sqrt((sle(validation_y.stack(), predicted_values) ** 2).mean())
 
-    print(results_rmlse)
+    print('Best performing model for registered users: ' + str(min(results_rmlse.values())))
     return results_rmlse
 
 
 def predict_test_x(model, test_x):
+    """
+    We are predicting the value on the test set using the best performing model.
+    :param model: The best performing xgb classifier.
+    :param test_x: The test set for which we need to predict the labels.
+    :return: predictions: Predicted labels for the test set.
+    """
     predictions = model.predict(test_x)
     predictions = np.exp(predictions) - 1
     predictions = np.round(predictions)
     return predictions
 
 
-def create_list_of_all_combinations():
-    in_list = [1, 2, 3, 4]
-    out_list = []
-    for i in range(1, len(in_list) + 1):
-        out_list.extend(itertools.combinations(in_list, i))
-    out_list = [x[0] if len(x) == 1 else list(x) for x in out_list]
-    return out_list
-
-
 def bin_dew_values(data):
-    bin_container = data['dew']
+    """
+    We decided to bin the dew values into bins of equal comfort.
+    """
+    bin_container = data['dew'].copy()
     bin_container[data['dew'] < 0] = 0
-    bin_container[(data['dew'] > 0).astype(int) + (data['dew'] < 12).astype(int) == 2 ] = 1
-    bin_container[(data['dew'] > 12).astype(int) + (data['dew'] < 17).astype(int) == 2 ] = 2
-    bin_container[(data['dew'] > 16).astype(int) + (data['dew'] < 19).astype(int) == 2 ] = 3
-    bin_container[(data['dew'] > 18).astype(int) + (data['dew'] < 22).astype(int) == 2 ] = 4
-    bin_container[(data['dew'] > 22).astype(int) + (data['dew'] < 25).astype(int) == 2 ] = 5
-    bin_container[(data['dew'] > 25).astype(int) + (data['dew'] < 27).astype(int) == 2 ] = 6
-    bin_container[(data['dew'] > 26)] = 7
+    bin_container[(data['dew'] > 0).astype(int) + (data['dew'] <= 12).astype(int) == 2] = 1
+    bin_container[(data['dew'] > 12).astype(int) + (data['dew'] <= 17).astype(int) == 2] = 2
+    bin_container[(data['dew'] > 16).astype(int) + (data['dew'] <= 19).astype(int) == 2] = 3
+    bin_container[(data['dew'] > 18).astype(int) + (data['dew'] <= 22).astype(int) == 2] = 4
+    bin_container[(data['dew'] > 22).astype(int) + (data['dew'] <= 25).astype(int) == 2] = 5
+    bin_container[(data['dew'] > 25).astype(int) + (data['dew'] <= 27).astype(int) == 2] = 6
+    bin_container[(data['dew'] > 2)] = 7
 
     data['dew_binned'] = bin_container
     data['bew_bin_3'] = np.floor(data['dew'] / 3)
@@ -335,26 +381,44 @@ def bin_dew_values(data):
 
 
 def good_day(data):
-    # Here, we identify and encode the characteristics of a particularily good day.
-
+    """
+    We create some additional weather factors.
+    """
+    #  A certain interaction of weather factors provides the 'best' opportunity
+    #  to rent out a bike.
     data['good_day'] = data['holiday']
     data['good_day'] = 0
-    windspeed_rows = ((data['windspeed'] > 10).astype(int) + (data['windspeed'] < 25).astype(int) == 2)
-    humidity_rows = ((data['humidity'] > 10).astype(int) + (data['windspeed'] < 40).astype(int) == 2)
-    temp_rows = ((data['temp'] > 25).astype(int) + (data['temp'] < 30).astype(int) == 2)
-    good_day_rows = ((windspeed_rows.astype(int) + humidity_rows.astype(int) + temp_rows.astype(int)) == 3)
-    data['good_day'].where(good_day_rows == True, other=1)
+    windspeed_above_10 = np.where(data['windspeed'] > 10)[0]
+    windspeed_below_25 = np.where(data['windspeed'] < 25)[0]
+    comfort_windspeed = np.intersect1d(windspeed_above_10, windspeed_below_25)
 
-    data.ix[data['good_day'], 'good_day'] = 1
+    humidity_above_10 = np.where(data['humidity'] > 10)[0]
+    humidity_below_25 = np.where(data['humidity'] < 25)[0]
+    comfort_humidity = np.intersect1d(humidity_above_10, humidity_below_25)
+
+    temp_above_10 = np.where(data['temp'] > 25)[0]
+    temp_below_25 = np.where(data['temp'] < 30)[0]
+    comfort_temp = np.intersect1d(temp_above_10, temp_below_25)
+
+    good_day = np.intersect1d(comfort_windspeed, comfort_humidity)
+    good_day = np.intersect1d(good_day, comfort_temp)
+    data['good_day'].values[good_day] = 1
 
     # This code is inspired by https://github.com/logicalguess/kaggle-bike-sharing-demand/blob/master/code/main.py
-    data['ideal'] = data[['temp', 'windspeed']].apply(lambda x: (0, 1)[x['temp'] > 27 and x['windspeed'] < 30], axis=1)
-    data['sticky'] = data[['humidity', 'workingday']].apply(lambda x: (0, 1)[x['workingday'] == 1 and x['humidity'] >= 60], axis=1)
+    data['ideal'] = data[['temp', 'windspeed']].apply(lambda x: (0, 1)[x['temp'] > 27 and
+                                                                       x['windspeed'] < 30], axis=1)
+    data['sticky'] = data[['humidity', 'workingday']].apply(lambda x: (0, 1)[x['workingday'] == 1 and
+                                                                             x['humidity'] >= 60], axis=1)
 
     return data
 
 
 def feature_engineering(data):
+    """
+    We are performing a number of feature engineering operations.
+    :param data: Original training cases.
+    :return: data: Original training cases with additional features.
+    """
     data = round_given_columns(data)
     data = add_variable_free_day(data)
     data = add_variable_weekend(data)
@@ -378,18 +442,35 @@ def cluster_given_columns(data):
 
 
 def round_given_columns(data):
-    columns_rounding = ['temp', 'atemp', 'windspeed', 'humidity']
-    for given_column in columns_rounding:
-        data[given_column].round()
+    """
+    We are rounding a number of columns to facilitate branching of the decision tree.
+    :param data: Original training data.
+    :return: data: Training data with rounded weather variables.
+    """
+    data['temp'] = data['temp'].round()
+    data['atemp'] = data['atemp'].round()
+    data['windspeed'] = data['windspeed'].round()
+    data['humidity'] = data['humidity'].round()
 
     return data
 
 
 def extract_validation_set(train_x, train_y):
+    """
+    We are creating a train-test split.
+    :param: train_x: Full training data.
+    :param: train_y: Labels of training data.
+    :return: training_x: Training data split.
+    :return: trainig_y: Training data labels split.
+    :return: validation_x: Validation data split.
+    :return: validation_y: Validation data labels split.
+    """
+
+    #  The first 4 days of a month are used as the validation set.
     cut_off_value = 4
     train_y = pd.DataFrame(train_y)
-    training_x = train_x.loc[train_x['day'] > cut_off_value, :]
-    training_y = train_y.loc[train_x['day'] > cut_off_value]
+    training_x = train_x.loc[train_x['day'] >= cut_off_value, :]
+    training_y = train_y.loc[train_x['day'] >= cut_off_value]
 
     validation_x = train_x.loc[train_x['day'] < cut_off_value, :]
     validation_y = train_y.loc[train_x['day'] < cut_off_value]
@@ -397,12 +478,22 @@ def extract_validation_set(train_x, train_y):
 
 
 def perform_log_on_output(train_y):
-    # Here, we apply log transformation to avoid that 0s become - inf.
+    """
+    Outliers were present. Here, we apply log transformation.
+    :param train_y:
+    :return:
+    """
+    #  We add 1 to avoid that 0s become -inf.
     train_y = np.log(train_y + 1)
     return train_y
 
 
 def interpolate_missing_data(train_x):
+    """
+    We interpolate missing (or unusual) cases of weather factors.
+    :param train_x: Original training data.
+    :return: train_x: Training data with interpolated weather data.
+    """
     train_x["weather"] = train_x["weather"].interpolate(method='time').apply(np.round)
     train_x["temp"] = train_x["temp"].interpolate(method='time')
     train_x["atemp"] = train_x["atemp"].interpolate(method='time')
@@ -413,11 +504,6 @@ def interpolate_missing_data(train_x):
 
 
 def bin_weather(train_x):
-    # According to https://en.wikipedia.org/wiki/Dew_point a certain binning of the weather might make sense.
-    # Temperature corresponds to the soil temperature and atemp is the air temperature.
-    # The soil temperature becomes somewhat warmer during the day and stays warm in the night.
-    # The airtemp is highly variable and can become hot during the day and cold during the night.
-    # Here, I chose the atemp for the binning.
 
     train_x["temp"] = train_x["temp"].interpolate(method='time')
     train_x["atemp"] = train_x["atemp"].interpolate(method='time')
@@ -426,109 +512,148 @@ def bin_weather(train_x):
 
 
 def calculate_dew_point(train_x):
-    # obtained from: http: // www.meteo - blog.net / 2012 - 05 / dewpoint - calculation - script - in -python /
+    """
+    We calculate the dew point (an absolute measure of humidity).
+    """
+    #  Background information regarding the dew measure.
+    #  According to https://en.wikipedia.org/wiki/Dew_point a certain binning of the weather might make sense.
+    #  Temperature corresponds to the soil temperature and atemp is the air temperature.
+    #  The soil temperature becomes somewhat warmer during the day and stays warm in the night.
+    #  The airtemp is highly variable and can become hot during the day and cold during the night.
+
+
+    # The code was obtained from: http://www.meteo-blog.net/2012-05/dewpoint-calculation-script-in-python/
 
     dew = np.round(dewpoint_approximation(train_x['atemp'], train_x['humidity']), decimals=5)
     dew = dew.fillna(np.round(dew.mean()))
-    dew.to_pickle('dew.pkl')
+    dew = np.round(dew)
+    #  dew.to_pickle('dew.pkl')
     train_x['dew'] = dew
 
     return train_x
 
 
-def dewpoint_approximation(T,RH):
+def dewpoint_approximation(temperature, rhumidity):
     # obtained from: http: // www.meteo - blog.net / 2012 - 05 / dewpoint - calculation - script - in -python /
     # constants
     a = 17.271
     b = 237.7 # degC
-
-    Td = (b * gamma(T,RH)) / (a - gamma(T,RH))
-
+    Td = (b * gamma(temperature,rhumidity)) / (a - gamma(temperature,rhumidity))
     return Td
 
 
-def gamma(T,RH):
+def gamma(temperature, rhumidity):
     # obtained from: http: // www.meteo - blog.net / 2012 - 05 / dewpoint - calculation - script - in -python /
     # constants
     a = 17.271
-    b = 237.7 # degC
-
-    g = (a * T / (b + T)) + np.log(RH/100.0)
-
+    b = 237.7
+    g = (a * temperature / (b + temperature)) + np.log(rhumidity/100.0)
     return g
 
 
 def interpolate_missing_y(train_y):
+    """
+    We are interpolating missing values of the outcome variable.
+    """
     train_y = train_y.interpolate(method='time').apply(np.round)
     return train_y
 
 
 def standardize_columns(data):
+    """
+    We decided to standardize the weather factor due to outliers.
+    """
     columns_to_standardize = ['temp', 'atemp', 'humidity', 'windspeed']
     min_max_scaler = RobustScaler()
 
     for column in columns_to_standardize:
         data[column] = min_max_scaler.fit_transform(data[column])
-
     return data
 
 
-def reverse_log(y_values):
-    y_values = np.exp(y_values) - 1
-    return y_values
+def reverse_log(predictions):
+    """
+    We are reversing the logarithm transformation.
+    :param predictions: The original predictions.
+    :return: predictions_reversed: Log-reversed predictions.
+    """
+    predictions_reversed = np.exp(predictions) - 1
+    return predictions_reversed
 
 
 def select_best_model(xgb_models, results_rsmle):
-    min_value = min(results_rsmle.values())
-    for element in results_rsmle:
-        if results_rsmle[element] == min_value:
-            min_key = element
-            break
-    best_xgb = joblib.load(xgb_models[min_key])
+    """
+    We are identifying the best performing model
+    :param xgb_models: All XGB models.
+    :param results_rsmle: Performance of xgb models on holdout set.
+    :return: best_xgb: Best xgb classifier.
+    """
+    best_model = min(results_rsmle, key=results_rsmle.get)
+    best_xgb = xgb_models[best_model]
 
     return best_xgb
 
 
-def preprocess_save_data():
-    #  Read (and preprocess) the training data.
-    train_x, train_y = read_in_training_data()
-    size_training = train_x.shape[0]
-    test_x = read_in_testing_data()
-    data = pd.concat([train_x, test_x], axis=0)
-    data.index = range(0, data.shape[0])
+def preprocess_save_data(perform_preprocessing):
+    """
+    We are reading in the data and performing all preprocessing steps.
+    :param perform_preprocessing: Repeat preprocessing or load data.
+    :return: train_x: Training data for the algorithm.
+    :return train_y: Labels for the training data.
+    :return test_x: Test cases which need to be predicted.
+    """
 
-    data = interpolate_missing_data(data)
-    data = feature_engineering(data)
-    data = standardize_columns(data)
+    if perform_preprocessing:
+        #  We are reading in the data and performing all preprocessing
+        #  steps from scratch.
+        train_x, train_y = read_in_training_data()
+        test_x = read_in_testing_data()
 
-    # Separate the data again into train and real test
-    training_rows = range(0, size_training)
-    testing_rows = range(size_training, (data.shape[0]))
-    train_x = data.iloc[training_rows, :]
-    test_x = data.iloc[testing_rows, :]
+        test_x = extract_date_information(test_x)
+        train_x = extract_date_information(train_x)
 
-    train_y = perform_log_on_output(train_y)
+        size_training = train_x.shape[0]
+        data = pd.concat([train_x, test_x], axis=0)
+        data.index = range(0, data.shape[0])
 
-    # Save the data.
-    train_x.to_pickle('train_x')
-    train_y.to_pickle('train_y')
-    test_x.to_pickle('test_x')
-    return train_x, train_y, test_x
+        data = interpolate_missing_data(data)
+        data = feature_engineering(data)
+        data = standardize_columns(data)
 
+        # Separate the data again into train and real test
+        training_rows = range(0, size_training)
+        testing_rows = range(size_training, (data.shape[0]))
+        train_x = data.iloc[training_rows, :]
+        test_x = data.iloc[testing_rows, :]
 
-def develop_model():
-    redo_preprocessing = 0
-    if redo_preprocessing:
-        train_x, train_y, test_x = preprocess_save_data()
+        train_y = perform_log_on_output(train_y)
+
+        # Save the data.
+        train_x.to_pickle('train_x')
+        train_y.to_pickle('train_y')
+        test_x.to_pickle('test_x')
     else:
         train_x = pd.read_pickle('train_x')
         train_y = pd.read_pickle('train_y')
         test_x = pd.read_pickle('test_x')
 
+    return train_x, train_y, test_x
+
+
+def main():
+    """
+    The function contains the complete data preparation and model building steps.
+    """
+    perform_preprocessing = True
+    train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
+
     # Separate training and local validation set for the three dependant variables.
-    train_x_casual, train_y_casual, validation_x_casual, validation_y_count = extract_validation_set(train_x, train_y['count'])
-    train_x_registered, train_y_registered, validation_x_registered, validation_y_registered = extract_validation_set(train_x, train_y['registered'])
-    train_x_casual, train_y_casual, validation_x_casual, validation_y_casual = extract_validation_set(train_x, train_y['casual'])
+    train_x_casual, train_y_casual, validation_x_casual, validation_y_count = \
+        extract_validation_set(train_x, train_y['count'])
+    train_x_registered, train_y_registered, validation_x_registered, validation_y_registered = \
+        extract_validation_set(train_x, train_y['registered'])
+    train_x_casual, train_y_casual, validation_x_casual, validation_y_casual = \
+        extract_validation_set(train_x, train_y['casual'])
 
     # Add noise to dependent variable.
     noise_level = 1
@@ -537,7 +662,8 @@ def develop_model():
     train_y_registered = add_log_noise(train_y_registered, noise_level)
 
     # First, we develop the model for registered users.
-    xgb_models = train_xgb_bagging_classifier(train_x_registered, train_y_registered)
+    user_group = 'registered'
+    xgb_models = train_xgb_classifier(train_x_registered, train_y_registered, user_group)
 
     # After training many models, we identify the best by their rmsle result on the validation set.
     results_rsmle = perform_prediction_on_validation(xgb_models, validation_x_registered, validation_y_registered)
@@ -550,7 +676,8 @@ def develop_model():
     predictions_best_registered = pd.DataFrame(np.round(np.exp(predictions_best_registered) - 1)).stack()
 
     # Secondly, we develop the model for casual users.
-    xgb_models = train_xgb_bagging_classifier(train_x_casual, train_y_casual)
+    user_group = 'casual'
+    xgb_models = train_xgb_classifier(train_x_casual, train_y_casual, user_group)
 
     # After training many models, we identify the best by their rmsle result on the validation set.
     results_rsmle = perform_prediction_on_validation(xgb_models, validation_x_casual, validation_y_casual)
@@ -578,5 +705,3 @@ def develop_model():
     submission_file.to_csv('submission_file.csv', index=False)
 
     print('EOF')
-
-develop_model()
