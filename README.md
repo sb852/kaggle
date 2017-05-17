@@ -1,6 +1,12 @@
 # Bike Sharing Demand
 This is a project page for the kaggle competition on bike sharing demand. (https://www.kaggle.com/c/bike-sharing-demand)
 
+Build instructions   
+------------------
+- main.py can be run using the anaconda environment (Python 3.x https://www.continuum.io/downloads)
+- additional information can be found in requirements.txt
+- hyperparamter search can take a long time until very best model is found (potentially need to use spark cluster)
+
 #  Background
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
 
