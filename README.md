@@ -7,6 +7,8 @@ Build instructions
 - additional information can be found in requirements.txt
 - hyperparamter search can take a long time until very best model is found (potentially need to use spark cluster)
 
+<br>
+
 #  Background
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
 
