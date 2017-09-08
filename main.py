@@ -66,6 +66,7 @@ def extract_date_information(train_x):
     date_time_info['day_of_month'] = pd.DatetimeIndex(train_x['datetime']).strftime('%m').astype(np.int)
     date_time_info['day_of_week'] = pd.DatetimeIndex(train_x['datetime']).strftime('%w').astype(np.int)
 
+    #  We add the new datatime information and delete the original one.
     train_x = pd.concat([train_x, date_time_info], axis=1)
     train_x = train_x.drop(['datetime'], axis=1)
 
@@ -78,7 +79,7 @@ def read_in_training_data():
     :return: train_x: Training data for the algorithm.
     :return: train_y: All outcome variables for the training data.
     """
-    path_training_data = "data/train(1).csv"
+    path_training_data = "data/train.csv"
     training_data = pd.read_csv(path_training_data)
     train_y = pd.DataFrame()
     train_y['count'] = training_data['count']
@@ -152,7 +153,7 @@ def add_variable_type_day(data_set):
     return data_set
 
 
-def categorize_hours(data_set):
+def bin_hours(data_set):
     """
     Here, we bin the hour variable.
     """
@@ -179,7 +180,7 @@ def add_log_noise(train_y, noise_level):
     """
     We are adding a small random noise to our trainig labels to improve generalization.
     :param train_y: Trainig data labels.
-    :param noise_level:
+    :param noise_level: The amount of noise we are adding.
     :return: train_y: Training data labels with noise.
     """
     # We are adding noise between 0 and 10 for 2/3 of the y rows.
@@ -260,7 +261,7 @@ def train_xgb_classifier(train_x, train_y, user_group):
         if not(path_exits):
             os.mkdir('./xgb_models/' + user_group + '/')
 
-        different_iterations = range(1, 100)
+        different_iterations = range(1, 3)
         xgb_models = dict()
         for iteration in different_iterations:
             parameters = produce_random_parameters()
@@ -280,11 +281,8 @@ def train_xgb_classifier(train_x, train_y, user_group):
                                       early_stopping_rounds=parameters['early_stopping'],
                                       eval_metric='rmse', eval_set=[(x_test, y_test)])
 
-            # We are saving the model for evaluation at a later moment.
-            save_xgb = 'xgb_models/' + user_group + '/model' + str(iteration) + '.pkl'
-            print('Iteration ' + str(iteration) + ', Score: ' + str(xgb_model.best_score))
-            joblib.dump(xgb_model, save_xgb)
-            xgb_models[iteration] = save_xgb
+            # We are keeping the model for evaluation at a later moment.
+            xgb_models[iteration] = xgb_model
 
     else:
         #  We are loading models which have already been developed.
@@ -361,14 +359,18 @@ def good_day(data):
     #  to rent out a bike.
     data['good_day'] = data['holiday']
     data['good_day'] = 0
+
+    #  We are finding moments when the windspeed is optimal.
     windspeed_above_10 = np.where(data['windspeed'] > 10)[0]
     windspeed_below_25 = np.where(data['windspeed'] < 25)[0]
     comfort_windspeed = np.intersect1d(windspeed_above_10, windspeed_below_25)
 
+    #  We are finding moments when the humidity is appropriate.
     humidity_above_10 = np.where(data['humidity'] > 10)[0]
     humidity_below_25 = np.where(data['humidity'] < 25)[0]
     comfort_humidity = np.intersect1d(humidity_above_10, humidity_below_25)
 
+    #  We are finding the best moments in terms of temperature.
     temp_above_10 = np.where(data['temp'] > 25)[0]
     temp_below_25 = np.where(data['temp'] < 30)[0]
     comfort_temp = np.intersect1d(temp_above_10, temp_below_25)
@@ -377,7 +379,8 @@ def good_day(data):
     good_day = np.intersect1d(good_day, comfort_temp)
     data['good_day'].values[good_day] = 1
 
-    # This code is inspired by https://github.com/logicalguess/kaggle-bike-sharing-demand/blob/master/code/main.py
+    #  Apart from good days, there can be other types of days.
+    #  (by https://github.com/logicalguess/kaggle-bike-sharing-demand/blob/master/code/main.py)
     data['ideal'] = data[['temp', 'windspeed']].apply(lambda x: (0, 1)[x['temp'] > 27 and
                                                                        x['windspeed'] < 30], axis=1)
     data['sticky'] = data[['humidity', 'workingday']].apply(lambda x: (0, 1)[x['workingday'] == 1 and
@@ -396,7 +399,7 @@ def feature_engineering(data):
     data = add_variable_free_day(data)
     data = add_variable_weekend(data)
     data = add_variable_type_day(data)
-    data = categorize_hours(data)
+    data = bin_hours(data)
     data = good_day(data)
     data = calculate_dew_point(data)
     data = bin_dew_values(data)
@@ -492,15 +495,16 @@ def calculate_dew_point(train_x):
     dew = np.round(dewpoint_approximation(train_x['atemp'], train_x['humidity']), decimals=5)
     dew = dew.fillna(np.round(dew.mean()))
     dew = np.round(dew)
-    #  dew.to_pickle('dew.pkl')
     train_x['dew'] = dew
 
     return train_x
 
 
 def dewpoint_approximation(temperature, rhumidity):
-    # obtained from: http: // www.meteo - blog.net / 2012 - 05 / dewpoint - calculation - script - in -python /
-    # constants
+    """
+    Compute dew point approximation.
+    """
+    # obtained from: http://www.meteo-blog.net/2012-05/dewpoint-calculation-script-in-python/constants
     a = 17.271
     b = 237.7 # degC
     Td = (b * gamma(temperature,rhumidity)) / (a - gamma(temperature,rhumidity))
@@ -508,8 +512,10 @@ def dewpoint_approximation(temperature, rhumidity):
 
 
 def gamma(temperature, rhumidity):
-    # obtained from: http: // www.meteo - blog.net / 2012 - 05 / dewpoint - calculation - script - in -python /
-    # constants
+    """
+    We are computing gamma.
+    """
+    # obtained from: http://www.meteo-blog.net/2012-05/dewpoint-calculation-script-in-python/constants
     a = 17.271
     b = 237.7
     g = (a * temperature / (b + temperature)) + np.log(rhumidity/100.0)
@@ -563,7 +569,7 @@ def preprocess_save_data(perform_preprocessing):
     """
     We are reading in the data and performing all preprocessing steps.
     :param perform_preprocessing: Repeat preprocessing or load data.
-    :return: train_x: Training data for the algorithm.
+    :return train_x: Training data for the algorithm.
     :return train_y: Labels for the training data.
     :return test_x: Test cases which need to be predicted.
     """
@@ -583,7 +589,6 @@ def preprocess_save_data(perform_preprocessing):
 
         data = interpolate_missing_data(data)
         data = feature_engineering(data)
-        data = standardize_columns(data)
 
         # Separate the data again into train and real test
         training_rows = range(0, size_training)
@@ -609,7 +614,7 @@ def main():
     """
     The function contains the complete data preparation and model building steps.
     """
-    perform_preprocessing = True
+    perform_preprocessing = False
     train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
 
     # Separate training and local validation set for the three dependant variables.
@@ -670,3 +675,5 @@ def main():
     submission_file.to_csv('submission_file.csv', index=False)
 
     print('EOF')
+
+main()
