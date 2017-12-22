@@ -1,3 +1,7 @@
+'''
+The file is used to perform all preprocessing steps and identify the best xgb model.
+'''
+
 import numpy as np
 from sklearn.cross_validation import train_test_split
 import xgboost as xgb
@@ -232,6 +236,10 @@ def sle(actual, predicted):
 
 
 def produce_random_parameters():
+	"""
+	We are producing randomized hyperparameters for the XGB regressor.
+	:return: Pandas Series containing randmized hyperparamters.
+	"""
     parameters = pd.Series()
     parameters['max_depth'] = random.randint(3, 20)
     parameters['n_estimators'] = random.randint(100, 20000)
@@ -610,7 +618,7 @@ def preprocess_save_data(perform_preprocessing):
     return train_x, train_y, test_x
 
 
-def main():
+if __name__ == "__main__":  
     """
     The function contains the complete data preparation and model building steps.
     """
@@ -676,4 +684,3 @@ def main():
 
     print('EOF')
 
-main()
