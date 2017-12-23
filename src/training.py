@@ -464,8 +464,8 @@ def extract_validation_set(train_x, train_y):
 def perform_log_on_output(train_y):
     """
     Outliers were present. Here, we apply log transformation.
-    :param train_y:
-    :return:
+    :param train_y: Vector of labels.
+    :return train_y: Vector of logtransformed values.
     """
     #  We add 1 to avoid that 0s become -inf.
     train_y = np.log(train_y + 1)

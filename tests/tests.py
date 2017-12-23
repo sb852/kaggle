@@ -70,6 +70,19 @@ class TestAdd(unittest.TestCase):
         self.assertEqual(np.unique(test), True)
 
 
+    def test_perform_log_on_output(self):
+        """
+        We are testing if the log transformation worked.
+        """
+        from training import perform_log_on_output
+
+        example_value = np.random.randint(0, 1000)
+        output_value = perform_log_on_output(example_value)
+
+        expected_value = np.log(example_value + 1)
+
+        self.assertEqual(output_value, expected_value)
+
 
 if __name__ == '__main__':
     unittest.main()
