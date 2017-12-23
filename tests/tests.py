@@ -33,7 +33,7 @@ class TestAdd(unittest.TestCase):
 
     def test_preprocess_save_data(self):
         """
-        We are testing the entire preprocessing pipeline.
+        We are testing the entire preprocessing pipeline. This is an integration test.
         """
 
         from training import preprocess_save_data
@@ -47,12 +47,39 @@ class TestAdd(unittest.TestCase):
 
         self.assertEqual(train_x.shape[0], 10886)
 
-        #  We expect the following columns to be present.
+        #  We expect the following columns to be present in the training data.
         present_columns = ['hour', 'day_of_year', 'day_of_month', 'day_of_week', 'day_off', 'day',
                            'is_weekend', 'hours_categorized_2']
 
         test = [column_name in train_x.columns for column_name in present_columns]
         self.assertEqual(np.unique(test), True)
+
+        self.assertEqual(np.unique(train_x['hour']).size, 24)
+        self.assertEqual(np.unique(train_x['day_of_month']).size, 12)
+        self.assertEqual(np.unique(train_x['day_of_week']).size, 7)
+
+        self.assertEqual(np.unique(train_x['day_off']).size, 2)
+        self.assertEqual(np.unique(train_x['is_weekend']).size, 2)
+        self.assertEqual(np.unique(train_x['day']).size, 19)
+
+        self.assertEqual(np.unique(train_x['dew_binned']).size, 3)
+
+        #  We expect the following columns to be present in the testing data.
+        present_columns = ['hour', 'day_of_year', 'day_of_month', 'day_of_week', 'day_off', 'day',
+                           'is_weekend', 'hours_categorized_2']
+
+        test = [column_name in test_x.columns for column_name in present_columns]
+        self.assertEqual(np.unique(test), True)
+
+        self.assertEqual(np.unique(test_x['hour']).size, 24)
+        self.assertEqual(np.unique(test_x['day_of_month']).size, 12)
+        self.assertEqual(np.unique(test_x['day_of_week']).size, 7)
+
+        self.assertEqual(np.unique(test_x['day_off']).size, 2)
+        self.assertEqual(np.unique(test_x['is_weekend']).size, 1)
+        self.assertEqual(np.unique(test_x['day']).size, 19)
+
+        self.assertEqual(np.unique(test_x['dew_binned']).size, 3)
 
 
     def test_produce_random_parameters(self):
