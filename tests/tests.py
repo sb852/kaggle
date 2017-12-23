@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+import pandas as pd
 import numpy as np
 src_path = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/src'
 sys.path.append(src_path)
@@ -109,6 +110,25 @@ class TestAdd(unittest.TestCase):
         expected_value = np.log(example_value + 1)
 
         self.assertEqual(output_value, expected_value)
+
+
+    def test_add_log_noise(self):
+        """
+        We are testing if adding noise is working.
+        """
+        from training import add_log_noise
+
+        train_y = pd.DataFrame([0, 1, 2, 3])
+        noise_level = 1
+        output = add_log_noise(train_y, noise_level)
+
+        self.assertAlmostEqual(train_y.values[0], output[0])
+        self.assertAlmostEqual(train_y.values[1], output[1])
+        self.assertAlmostEqual(train_y.values[2], output[2])
+        self.assertAlmostEqual(train_y.values[3], output[3])
+
+
+
 
 
 if __name__ == '__main__':
