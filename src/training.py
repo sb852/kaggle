@@ -102,7 +102,7 @@ def read_in_testing_data():
     We are reading in the test data.
     :return: test_x: The cases which need to be predicted.
     """
-    path_testing_data = "data/test.csv"
+    path_testing_data = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/data/training_data/test.csv'
     test_x = pd.read_csv(path_testing_data)
 
     return test_x
@@ -268,10 +268,7 @@ def train_xgb_classifier(train_x, train_y, user_group):
     retrain = True
 
     if retrain:
-        path_exits = os.path.isdir('./xgb_models/' + user_group + '/')
-        if not(path_exits):
-            os.mkdir('./xgb_models/' + user_group + '/')
-
+        #  We are developing many xgb classifiers which all have randomized hyperparameters.
         different_iterations = range(1, 3)
         xgb_models = dict()
         for iteration in different_iterations:
@@ -292,12 +289,12 @@ def train_xgb_classifier(train_x, train_y, user_group):
                                       early_stopping_rounds=parameters['early_stopping'],
                                       eval_metric='rmse', eval_set=[(x_test, y_test)])
 
-            # We are keeping the model for evaluation at a later moment.
+            # We are storing the model for evaluation at a later moment.
             xgb_models[iteration] = xgb_model
 
     else:
         #  We are loading models which have already been developed.
-        xgb_path = './xgb_models/' + user_group + '/'
+        xgb_path = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/data/xgb_models/' + user_group + '/'
         xgb_model_names = os.listdir(xgb_path)
         xgb_models = dict()
 
@@ -585,38 +582,28 @@ def preprocess_save_data(perform_preprocessing):
     :return test_x: Test cases which need to be predicted.
     """
 
-    if perform_preprocessing:
-        #  We are reading in the data and performing all preprocessing
-        #  steps from scratch.
-        train_x, train_y = read_in_training_data()
-        test_x = read_in_testing_data()
+    #  We are reading in the data and performing all preprocessing
+    #  steps from scratch.
+    train_x, train_y = read_in_training_data()
+    test_x = read_in_testing_data()
 
-        test_x = extract_date_information(test_x)
-        train_x = extract_date_information(train_x)
+    test_x = extract_date_information(test_x)
+    train_x = extract_date_information(train_x)
 
-        size_training = train_x.shape[0]
-        data = pd.concat([train_x, test_x], axis=0)
-        data.index = range(0, data.shape[0])
+    size_training = train_x.shape[0]
+    data = pd.concat([train_x, test_x], axis=0)
+    data.index = range(0, data.shape[0])
 
-        data = interpolate_missing_data(data)
-        data = feature_engineering(data)
+    data = interpolate_missing_data(data)
+    data = feature_engineering(data)
 
-        # Separate the data again into train and real test
-        training_rows = range(0, size_training)
-        testing_rows = range(size_training, (data.shape[0]))
-        train_x = data.iloc[training_rows, :]
-        test_x = data.iloc[testing_rows, :]
+    # Separate the data again into train and real test
+    training_rows = range(0, size_training)
+    testing_rows = range(size_training, (data.shape[0]))
+    train_x = data.iloc[training_rows, :]
+    test_x = data.iloc[testing_rows, :]
 
-        train_y = perform_log_on_output(train_y)
-
-        # Save the data.
-        train_x.to_pickle('train_x')
-        train_y.to_pickle('train_y')
-        test_x.to_pickle('test_x')
-    else:
-        train_x = pd.read_pickle('train_x')
-        train_y = pd.read_pickle('train_y')
-        test_x = pd.read_pickle('test_x')
+    train_y = perform_log_on_output(train_y)
 
     return train_x, train_y, test_x
 

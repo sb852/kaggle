@@ -1,33 +1,48 @@
-import mymath
 import unittest
- 
+import os
+import sys
+src_path = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/src'
+sys.path.append(src_path)
+
 class TestAdd(unittest.TestCase):
     """
-    Test the add function from the mymath library
+    Test the functions from the bike sharing repository.
     """
  
-    def test_add_integers(self):
+    def test_read_in_training_data(self):
         """
         Test that the addition of two integers returns the correct total
         """
-        result = mymath.add(1, 2)
-        self.assertEqual(result, 3)
- 
-    def test_add_floats(self):
+        from training import read_in_training_data
+        training_x, training_y = read_in_training_data()
+
+        self.assertEqual(training_x._typ, 'dataframe')
+        self.assertEqual(training_y._typ, 'dataframe')
+
+
+    def test_read_in_testing_data(self):
         """
-        Test that the addition of two floats returns the correct result
+        Test that the addition of two integers returns the correct total
         """
-        result = mymath.add(10.5, 2)
-        self.assertEqual(result, 12.5)
- 
-    def test_add_strings(self):
+        from training import read_in_testing_data
+        training_x = read_in_testing_data()
+
+        self.assertEqual(training_x._typ, 'dataframe')
+
+
+    def test_preprocess_save_data(self):
         """
-        Test the addition of two strings returns the two string as one
-        concatenated string
+        We are testing the entire preprocessing pipeline.
         """
-        result = mymath.add('abc', 'def')
-        self.assertEqual(result, 'abcdef')
- 
- 
+
+        from training import preprocess_save_data
+
+        perform_preprocessing = True
+        train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
+
+        print('x')
+
+
+
 if __name__ == '__main__':
     unittest.main()
