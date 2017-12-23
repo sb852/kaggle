@@ -2,17 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a819ced5-ea85-4e07-b819-9d6d61b5c673" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model1.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model10.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model2.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model3.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model4.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model5.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model6.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model7.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model8.pkl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/xgb_models/registered/model9.pkl" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/training.py" afterPath="$PROJECT_DIR$/src/training.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/tests.py" afterPath="$PROJECT_DIR$/tests/tests.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,7 +16,7 @@
       <file leaf-file-name="prediction.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/prediction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="-68">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -37,8 +26,8 @@
       <file leaf-file-name="tests.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <state relative-caret-position="166">
+              <caret line="63" column="57" lean-forward="false" selection-start-line="63" selection-start-column="57" selection-end-line="63" selection-end-column="57" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -49,8 +38,8 @@
       <file leaf-file-name="training.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/training.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="614" column="0" lean-forward="false" selection-start-line="614" selection-start-column="0" selection-end-line="616" selection-end-column="0" />
+            <state relative-caret-position="85">
+              <caret line="240" column="29" lean-forward="false" selection-start-line="240" selection-start-column="4" selection-end-line="240" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -62,8 +51,8 @@
     <findStrings>
       <find>extract_validation_set</find>
       <find>train_xgb_classifier</find>
-      <find>preprocess_save_data</find>
       <find>read_in_training_data</find>
+      <find>preprocess_save_data</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -268,16 +257,6 @@
           <line>305</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/tests.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="48" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/tests.py</url>
-          <line>42</line>
-          <option name="timeStamp" value="49" />
-        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
@@ -289,7 +268,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="50" />
+      <option name="time" value="56" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -310,6 +289,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/anaconda/lib/python3.6/importlib/_bootstrap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-249">
+          <caret line="204" column="0" lean-forward="false" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/prediction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-68">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/training.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="240" column="29" lean-forward="false" selection-start-line="240" selection-start-column="4" selection-end-line="240" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/anaconda/lib/python3.6/unittest/case.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="167">
@@ -318,26 +321,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/prediction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/training.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="614" column="0" lean-forward="false" selection-start-line="614" selection-start-column="0" selection-end-line="616" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+        <state relative-caret-position="166">
+          <caret line="63" column="57" lean-forward="false" selection-start-line="63" selection-start-column="57" selection-end-line="63" selection-end-column="57" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
