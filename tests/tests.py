@@ -128,8 +128,5 @@ class TestAdd(unittest.TestCase):
         self.assertAlmostEqual(train_y.values[3], output[3])
 
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
