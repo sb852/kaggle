@@ -83,7 +83,10 @@ def read_in_training_data():
     :return: train_x: Training data for the algorithm.
     :return: train_y: All outcome variables for the training data.
     """
-    path_training_data = "data/train.csv"
+
+    #  We are finding the the folder where the data is stored.
+    path_training_data = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/data/training_data/train.csv'
+
     training_data = pd.read_csv(path_training_data)
     train_y = pd.DataFrame()
     train_y['count'] = training_data['count']
@@ -236,10 +239,10 @@ def sle(actual, predicted):
 
 
 def produce_random_parameters():
-	"""
-	We are producing randomized hyperparameters for the XGB regressor.
-	:return: Pandas Series containing randmized hyperparamters.
-	"""
+    """
+    We are producing randomized hyperparameters for the XGB regressor.
+    :return: Pandas Series containing randmized hyperparamters.
+    """
     parameters = pd.Series()
     parameters['max_depth'] = random.randint(3, 20)
     parameters['n_estimators'] = random.randint(100, 20000)
@@ -622,7 +625,7 @@ if __name__ == "__main__":
     """
     The function contains the complete data preparation and model building steps.
     """
-    perform_preprocessing = False
+    perform_preprocessing = True
     train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
 
     # Separate training and local validation set for the three dependant variables.
