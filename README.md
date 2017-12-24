@@ -12,6 +12,7 @@ Build instructions
 #  Background
 In the competition, bike rentals per hour need to be predicted. The training set consists of bike rentals per hour for the first 20 days of each month for 2012 and 2013. The test set consists of the remaining days of each month of both years.
 
+#  Original Data
 The following independent variables are given (taken from the project page):  
 __'datetime'__ - hourly date + timestamp  
 __'season'__ -  1 = spring, 2 = summer, 3 = fall, 4 = winter  
@@ -25,7 +26,7 @@ __'temp'__ - temperature in Celsius
 __'atemp'__ - "feels like" temperature in Celsius  
 __'humidity'__ - relative humidity  
 __'windspeed'__ - wind speed  
-
+ 
 The dataset has a low number of features. Feature engineering was performed to drastically improve the model performance. No feature elimination was performed.
 
 Three dependent variables are given.  
@@ -149,6 +150,6 @@ The test cases seems to be quite different from the training set as the local rm
 #  Future directions  
 
 The randomized hyperparamter search was only run for two hours on a quad-core i7 laptop. A better final score is likely
-if the hyperparameter search is run for a longer time. We could improve the hyperparameter search by using a genetic algorithms approach and improve the model selection using a 5fold cv.
+if the hyperparameter search is run for a longer time. We could improve the hyperparameter search by using a genetic algorithms approach and improve the model selection using a 5fold cv. Regarding the crossvalidation procedure, one might want to try to split each month into 5 different folds. I have observed a lot of day-to-day changes, therefore the selection of folds needs to be done with extreme care. 
 
 A more diverse set of classifiers could also be tested including logistic regression, svr and neural networks.
