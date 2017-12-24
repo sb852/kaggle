@@ -39,8 +39,7 @@ class TestAdd(unittest.TestCase):
 
         from training import preprocess_save_data
 
-        perform_preprocessing = True
-        train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
+        train_x, train_y, test_x = preprocess_save_data()
 
         #  We expect to have three label colunms and 10866 observations.
         self.assertEqual(train_y.shape[1], 3)
@@ -78,7 +77,7 @@ class TestAdd(unittest.TestCase):
 
         self.assertEqual(np.unique(test_x['day_off']).size, 2)
         self.assertEqual(np.unique(test_x['is_weekend']).size, 1)
-        self.assertEqual(np.unique(test_x['day']).size, 19)
+        self.assertEqual(np.unique(test_x['day']).size, 12)
 
         self.assertEqual(np.unique(test_x['dew_binned']).size, 3)
 
@@ -122,10 +121,10 @@ class TestAdd(unittest.TestCase):
         noise_level = 1
         output = add_log_noise(train_y, noise_level)
 
-        self.assertAlmostEqual(train_y.values[0], output[0])
-        self.assertAlmostEqual(train_y.values[1], output[1])
-        self.assertAlmostEqual(train_y.values[2], output[2])
-        self.assertAlmostEqual(train_y.values[3], output[3])
+        self.assertAlmostEqual(train_y.values[0], np.round(output[0]))
+        self.assertAlmostEqual(train_y.values[1], np.round(output[1]))
+        self.assertAlmostEqual(train_y.values[2], np.round(output[2]))
+        self.assertAlmostEqual(train_y.values[3], np.round(output[3]))
 
 
 if __name__ == '__main__':

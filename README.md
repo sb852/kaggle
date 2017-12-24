@@ -3,9 +3,16 @@ This is a project page for the kaggle competition on bike sharing demand. (https
 
 Build instructions   
 ------------------
-- main.py can be run using the anaconda environment (Python 3.x https://www.continuum.io/downloads)
-- additional information can be found in requirements.txt
-- hyperparamter search can take a long time until very best model is found (potentially need to use spark cluster)
+- install anaconda environment (Python 3.x https://www.continuum.io/downloads)
+- hyperparamter search can take a long time until very best model is found (i.e. hours if run locally)
+
+```python
+conda create -n bike_sharing python=3.6
+source activate bike_sharing
+conda install --yes --file requirements.txt
+conda install -c conda-forge xgboost
+```
+
 
 <br>
 
