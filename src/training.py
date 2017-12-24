@@ -269,7 +269,7 @@ def train_xgb_classifier(train_x, train_y, user_group):
 
     if retrain:
         #  We are developing many xgb classifiers which all have randomized hyperparameters.
-        different_iterations = range(1, 3)
+        different_iterations = range(1, 1000)
         xgb_models = dict()
         for iteration in different_iterations:
             parameters = produce_random_parameters()
@@ -599,7 +599,7 @@ def preprocess_save_data():
     data = interpolate_missing_data(data)
 
     #  We are performing feature engineering.
-    data = feature_engineering(data)
+    #data = feature_engineering(data)
 
     # Separate the data again into train and real test.
     training_rows = range(0, size_training)
@@ -627,10 +627,10 @@ if __name__ == "__main__":
         extract_validation_set(train_x, train_y['casual'])
 
     # Add noise to dependent variable.
-    noise_level = 1
-    train_y_casual = add_log_noise(train_y_casual, noise_level)
-    noise_level = 1
-    train_y_registered = add_log_noise(train_y_registered, noise_level)
+    #noise_level = 1
+    #train_y_casual = add_log_noise(train_y_casual, noise_level)
+    #noise_level = 1
+    #train_y_registered = add_log_noise(train_y_registered, noise_level)
 
     # First, we develop the model for registered users.
     user_group = 'registered'
@@ -671,9 +671,10 @@ if __name__ == "__main__":
     final_predictions = np.round((predictions_registered + predictions_casual))
 
     # Save submission file.
-    submission_file = pd.read_csv('data/sampleSubmission.csv')
+    path_submission_file = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/data/training_data/sampleSubmission.csv'
+    submission_file = pd.read_csv(path_submission_file)
     submission_file['count'] = final_predictions.astype(np.int)
-    submission_file.to_csv('submission_file.csv', index=False)
+    submission_file.to_csv(path_submission_file, index=False)
 
     print('EOF')
 
