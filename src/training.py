@@ -573,7 +573,7 @@ def select_best_model(xgb_models, results_rsmle):
     return best_xgb
 
 
-def preprocess_save_data(perform_preprocessing):
+def preprocess_save_data():
     """
     We are reading in the data and performing all preprocessing steps.
     :param perform_preprocessing: Repeat preprocessing or load data.
@@ -582,22 +582,26 @@ def preprocess_save_data(perform_preprocessing):
     :return test_x: Test cases which need to be predicted.
     """
 
-    #  We are reading in the data and performing all preprocessing
-    #  steps from scratch.
+    #  We are reading in the data and performing all preprocessing steps.
     train_x, train_y = read_in_training_data()
     test_x = read_in_testing_data()
 
+    #  We change the datetime information which is encoded as a string to explicit columns.
     test_x = extract_date_information(test_x)
     train_x = extract_date_information(train_x)
 
+    #  We concatenate the training and testing data for now as it is easier to perform some steps on the
+    #  combined data.
     size_training = train_x.shape[0]
     data = pd.concat([train_x, test_x], axis=0)
     data.index = range(0, data.shape[0])
 
     data = interpolate_missing_data(data)
+
+    #  We are performing feature engineering.
     data = feature_engineering(data)
 
-    # Separate the data again into train and real test
+    # Separate the data again into train and real test.
     training_rows = range(0, size_training)
     testing_rows = range(size_training, (data.shape[0]))
     train_x = data.iloc[training_rows, :]
@@ -612,8 +616,7 @@ if __name__ == "__main__":
     """
     The function contains the complete data preparation and model building steps.
     """
-    perform_preprocessing = True
-    train_x, train_y, test_x = preprocess_save_data(perform_preprocessing)
+    train_x, train_y, test_x = preprocess_save_data()
 
     # Separate training and local validation set for the three dependant variables.
     train_x_casual, train_y_casual, validation_x_casual, validation_y_count = \
