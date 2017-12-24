@@ -10,8 +10,8 @@ import pandas as pd
 import itertools
 from sklearn.preprocessing import RobustScaler
 from sklearn.externals import joblib
-from sklearn.ensemble import RandomForestRegressor
 import os
+from sklearn.model_selection import RandomizedSearchCV
 
 
 def bin_hours_registered(data):
@@ -176,9 +176,12 @@ def cluster_month(data_set):
     Here, we split the months into different subgroups.
     """
 
-    data_set['month_chunks_2'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 2))
-    data_set['month_chunks_3'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 3))
-    data_set['month_chunks_4'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + (np.floor(data_set['month'] / 4))
+    data_set['month_chunks_2'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + \
+                                 (np.floor(data_set['month'] / 2))
+    data_set['month_chunks_3'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + \
+                                 (np.floor(data_set['month'] / 3))
+    data_set['month_chunks_4'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + \
+                                 (np.floor(data_set['month'] / 4))
 
     return data_set
 
@@ -264,44 +267,37 @@ def train_xgb_classifier(train_x, train_y, user_group):
     :param user_group: Name of the user group ('registered', 'casual').
     :return: xgb_models: A number of xgb models.
     """
-    #  We can load old models or train new xgb models.
-    retrain = True
 
-    if retrain:
-        #  We are developing many xgb classifiers which all have randomized hyperparameters.
-        different_iterations = range(1, 1000)
-        xgb_models = dict()
-        for iteration in different_iterations:
-            parameters = produce_random_parameters()
+    #  We are developing many xgb classifiers which all have randomized hyperparameters.
+    different_iterations = range(1, 1000)
+    xgb_models = dict()
+    counter = 0
 
-            # Develop the model.
-            x_train, x_test, y_train, y_test = train_test_split(train_x, train_y,
-                                                                random_state=iteration,
-                                                                test_size=parameters['size_xgb_val'])
+    #  TODO:
+    #  The implementation can be greatly sped up by parallezing the model development.
 
-            xgb_model = xgb.XGBRegressor(n_estimators=int(parameters['n_estimators']),
-                                         max_depth=int(parameters['max_depth']),
-                                         min_child_weight=parameters['min_child_weight'],
-                                         learning_rate=parameters['learning_rate'],
-                                         subsample=parameters['subsample'])
+    for iteration in different_iterations:
+        parameters = produce_random_parameters()
 
-            xgb_model = xgb_model.fit(x_train, y_train, verbose=False,
-                                      early_stopping_rounds=parameters['early_stopping'],
-                                      eval_metric='rmse', eval_set=[(x_test, y_test)])
+        # Develop the model.
+        x_train, x_test, y_train, y_test = train_test_split(train_x, train_y,
+                                                            random_state=iteration,
+                                                            test_size=parameters['size_xgb_val'])
 
-            # We are storing the model for evaluation at a later moment.
-            xgb_models[iteration] = xgb_model
+        xgb_model = xgb.XGBRegressor(n_estimators=int(parameters['n_estimators']),
+                                     max_depth=int(parameters['max_depth']),
+                                     min_child_weight=parameters['min_child_weight'],
+                                     learning_rate=parameters['learning_rate'],
+                                     subsample=parameters['subsample'])
 
-    else:
-        #  We are loading models which have already been developed.
-        xgb_path = os.path.normpath(os.getcwd() + os.sep + os.pardir) + '/data/xgb_models/' + user_group + '/'
-        xgb_model_names = os.listdir(xgb_path)
-        xgb_models = dict()
+        xgb_model = xgb_model.fit(x_train, y_train, verbose=False,
+                                  early_stopping_rounds=parameters['early_stopping'],
+                                  eval_metric='rmse', eval_set=[(x_test, y_test)])
 
-        for current_model_name in xgb_model_names:
-            xgb_model = joblib.load(xgb_path + current_model_name)
-            xgb_models[current_model_name] = xgb_model
-        print('XGB models loaded.')
+        # We are storing the model for evaluation at a later moment.
+        xgb_models[iteration] = xgb_model
+        print('Model training iteration finished: ' + str(counter))
+        counter += 1
 
     return xgb_models
 
@@ -309,9 +305,9 @@ def train_xgb_classifier(train_x, train_y, user_group):
 def perform_prediction_on_validation(xgb_models, validation_x, validation_y):
     """
     We are performing predictions on the test se
-    :param xgb_models:
-    :param validation_x:
-    :param validation_y:
+    :param xgb_models: Hashmap of holding all xgbs models.
+    :param validation_x: Validation data features.
+    :param validation_y: Labels of the validation observations.
     :return:
     """
     validation_y = np.exp(validation_y) - 1
@@ -416,7 +412,9 @@ def feature_engineering(data):
 
 
 def cluster_given_columns(data):
-    # Here, we create data bins.
+    """
+    We are creating bins of the data.
+    """
     data['temp_bins_3'] = np.floor(data['temp'] / 3)
     data['atemp_bins_3'] = np.floor(data['atemp'] / 3)
     data['humidity_5'] = np.floor(data['humidity'] / 5)
@@ -497,7 +495,6 @@ def calculate_dew_point(train_x):
     #  The soil temperature becomes somewhat warmer during the day and stays warm in the night.
     #  The airtemp is highly variable and can become hot during the day and cold during the night.
 
-
     # The code was obtained from: http://www.meteo-blog.net/2012-05/dewpoint-calculation-script-in-python/
 
     dew = np.round(dewpoint_approximation(train_x['atemp'], train_x['humidity']), decimals=5)
@@ -514,8 +511,8 @@ def dewpoint_approximation(temperature, rhumidity):
     """
     # obtained from: http://www.meteo-blog.net/2012-05/dewpoint-calculation-script-in-python/constants
     a = 17.271
-    b = 237.7 # degC
-    Td = (b * gamma(temperature,rhumidity)) / (a - gamma(temperature,rhumidity))
+    b = 237.7  # degC
+    Td = (b * gamma(temperature, rhumidity)) / (a - gamma(temperature,rhumidity))
     return Td
 
 
@@ -599,7 +596,7 @@ def preprocess_save_data():
     data = interpolate_missing_data(data)
 
     #  We are performing feature engineering.
-    #data = feature_engineering(data)
+    data = feature_engineering(data)
 
     # Separate the data again into train and real test.
     training_rows = range(0, size_training)
@@ -627,10 +624,10 @@ if __name__ == "__main__":
         extract_validation_set(train_x, train_y['casual'])
 
     # Add noise to dependent variable.
-    #noise_level = 1
-    #train_y_casual = add_log_noise(train_y_casual, noise_level)
-    #noise_level = 1
-    #train_y_registered = add_log_noise(train_y_registered, noise_level)
+    noise_level = 1
+    train_y_casual = add_log_noise(train_y_casual, noise_level)
+    noise_level = 1
+    train_y_registered = add_log_noise(train_y_registered, noise_level)
 
     # First, we develop the model for registered users.
     user_group = 'registered'
