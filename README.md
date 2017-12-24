@@ -6,12 +6,12 @@ Build instructions
 - install anaconda environment (Python 3.x https://www.continuum.io/downloads)
 - hyperparamter search can take a long time until very best model is found (i.e. hours if run locally)
 
-```python
+'''python
 conda create -n bike_sharing python=3.6
 source activate bike_sharing
 conda install --yes --file requirements.txt
 conda install -c conda-forge xgboost
-```
+'''
 
 
 <br>
