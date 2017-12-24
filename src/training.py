@@ -269,7 +269,7 @@ def train_xgb_classifier(train_x, train_y, user_group):
     """
 
     #  We are developing many xgb classifiers which all have randomized hyperparameters.
-    different_iterations = range(1, 1000)
+    different_iterations = range(1, 5)
     xgb_models = dict()
     counter = 0
 
