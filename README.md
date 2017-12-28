@@ -8,8 +8,13 @@ Build instructions
 - In the following, we are creating a conda virtual environment.
 
 ```python
+#  Create Conda environment.
 conda create -n bike_sharing python=3.6
+
+#  Activate environment.
 source activate bike_sharing
+
+#  Install dependencies.
 conda install --yes --file requirements.txt
 conda install -c conda-forge xgboost
 ```
