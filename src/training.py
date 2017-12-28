@@ -17,6 +17,8 @@ from sklearn.model_selection import RandomizedSearchCV
 def bin_hours_registered(data):
     """
     Registered users showed a certain daily activity pattern which we used to bin hours.
+    :param data: Pandas Dataframe containing the full data.
+    :return data: Pandas Dataframe which now also contains a column with binned ours.
     """
     hour_bin = data['hour']
 
@@ -37,6 +39,8 @@ def bin_hours_registered(data):
 def bin_hours_casual(data):
     """
     Casual users showed a certain daily activity pattern which we used to bin hours.
+    :param data: Pandas Dataframe containing the full data.
+    :return data: Pandas Dataframe which now also contains a column with binned ours.
     """
     hour_bin = data['hour']
 
@@ -55,8 +59,8 @@ def bin_hours_casual(data):
 def extract_date_information(train_x):
     """
     We are extracting the date time information.
-    :param train_x: Original input with single datetime string.
-    :return: train_x: Modified training cases which additional time features.
+    :param train_x: Pandas Datafrane with datetime as a string.
+    :return: train_x: Pandas Dataframe with additional columns for date and time.
     """
     # We are extract the hour, day, month, year of the datetime string.
     date_time_info = pd.DataFrame()
@@ -175,7 +179,8 @@ def cluster_month(data_set):
     """
     Here, we split the months into different subgroups.
     """
-
+    #  We are creating a unique identifier for each month bin. Months are binned into either
+    #  2,3 or 4 bins.
     data_set['month_chunks_2'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + \
                                  (np.floor(data_set['month'] / 2))
     data_set['month_chunks_3'] = (np.ceil(data_set['year'] / min(data_set['year'])) * 10) + \
@@ -195,7 +200,7 @@ def add_log_noise(train_y, noise_level):
     """
     # We are adding noise between 0 and 10 for 2/3 of the y rows.
 
-    #  We identify rows with will have noise and which will not noise.
+    #  We choose rows with will have noise and which will not have noise.
     number_rows = list(range(0, train_y.shape[0]))
     noise_to_add = pd.Series([(random.random() / (30/noise_level)) for current_row in number_rows])
     no_noise_rows = random.sample(list(range(0, train_y.shape[0])), int(np.floor(train_y.shape[0]/3)))
@@ -304,7 +309,7 @@ def train_xgb_classifier(train_x, train_y, user_group):
 
 def perform_prediction_on_validation(xgb_models, validation_x, validation_y):
     """
-    We are performing predictions on the test se
+    We are performing predictions on the test set.
     :param xgb_models: Hashmap of holding all xgbs models.
     :param validation_x: Validation data features.
     :param validation_y: Labels of the validation observations.
@@ -358,6 +363,8 @@ def bin_dew_values(data):
 def good_day(data):
     """
     We create some additional weather factors.
+    :param data: Pandas Dataframe holding full dataset.
+    :return data: Pandas Dataframe holding full dataset and newly created features.
     """
     #  A certain interaction of weather factors provides the 'best' opportunity
     #  to rent out a bike.
@@ -396,8 +403,8 @@ def good_day(data):
 def feature_engineering(data):
     """
     We are performing a number of feature engineering operations.
-    :param data: Original training cases.
-    :return: data: Original training cases with additional features.
+    :param data: Original training data.
+    :return: data: Original training data with additional features.
     """
     data = round_given_columns(data)
     data = add_variable_free_day(data)
@@ -448,12 +455,15 @@ def extract_validation_set(train_x, train_y):
     :return: validation_y: Validation data labels split.
     """
 
-    #  The first 4 days of a month are used as the validation set.
+    #  The training data are all days after the fourth day. This split was chosen
+    #  as the prediction error on the first four days per month showed a strong correlation 
+    #  with the error on the public leaderboard.
     cut_off_value = 4
     train_y = pd.DataFrame(train_y)
     training_x = train_x.loc[train_x['day'] >= cut_off_value, :]
     training_y = train_y.loc[train_x['day'] >= cut_off_value]
 
+    #  The first 4 days of a month are used as the validation set.
     validation_x = train_x.loc[train_x['day'] < cut_off_value, :]
     validation_y = train_y.loc[train_x['day'] < cut_off_value]
     return training_x, training_y, validation_x, validation_y
@@ -461,7 +471,7 @@ def extract_validation_set(train_x, train_y):
 
 def perform_log_on_output(train_y):
     """
-    Outliers were present. Here, we apply log transformation.
+    Outliers were present, therefore we apply log transformation.
     :param train_y: Vector of labels.
     :return train_y: Vector of logtransformed values.
     """
